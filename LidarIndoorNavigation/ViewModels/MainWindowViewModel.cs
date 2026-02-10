@@ -7,7 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
 using SCIP_Library;
-
+using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.SkiaSharpView;
+using System.Collections.ObjectModel;
 
 namespace LidarIndoorNavigation.ViewModels
 {
@@ -15,18 +18,24 @@ namespace LidarIndoorNavigation.ViewModels
     {
         public static SerialPort? urg;
         int baudrate = 115200;
-        string comPort = "COM5";
+        string comPort = "COM6";
 
-        const int GET_NUM = 10;
+        const int GET_NUM = 1;
         const int start_step = 44;
         int end_step = 725;
         const double stepAngle = 0.3515625;
+
+        List<long> distances = new();
+        List<(double x, double y)> cartesianDistances = new();
+
+        ObservableCollection<ObservablePoint> chartPoints = new();
 
         public IRelayCommand? StartCommand { get; }
 
         public MainWindowViewModel()
         {
             StartCommand = new RelayCommand(StartScan);
+
         }
 
         private void StartScan()
@@ -46,18 +55,42 @@ namespace LidarIndoorNavigation.ViewModels
 
             if (urg != null)
             {
-                long lastTimeStamp = 0;
-                for (int i = 0; i <= GET_NUM; ++i)
+                for (int i = 0; i < GET_NUM; ++i)
                 {
-                    string receive_data = urg.ReadLine();
-                    List<long> distances = new List<long>();
+                    string receive_data = urg.ReadLine();                    
                     long time_stamp = 0;
                     SCIP_Reader.MD(receive_data, ref time_stamp, ref distances);
+                }
 
-                    System.Diagnostics.Debug.WriteLine($"Delta between scans: {time_stamp - lastTimeStamp} ms");
-                    lastTimeStamp = time_stamp;
+                urg.Close();
+                cartesianDistances = ConvertToCartesian(distances);
+
+                chartPoints.Clear();
+                foreach (var (x, y) in cartesianDistances)
+                {
+                    chartPoints.Add(new ObservablePoint(x, y));
                 }
             }
+        }
+
+        public ISeries[] Series { get; set; } = [
+                    new ScatterSeries<ObservablePoint>
+                    {
+                        Values = new ObservableCollection<ObservablePoint>()
+                    }
+                ];
+
+        private List<(double x, double y)> ConvertToCartesian(List<long> distances)
+        {
+            List<(double x, double y)> points = new List<(double x, double y)>();
+            for (int i = 0; i < distances.Count; ++i)
+            {
+                double angle = (start_step + i) * stepAngle;
+                double x = distances[i] * Math.Cos(angle * Math.PI / 180);
+                double y = distances[i] * Math.Sin(angle * Math.PI / 180);
+                points.Add((x, y));
+            }
+            return points;
         }
     }
 }

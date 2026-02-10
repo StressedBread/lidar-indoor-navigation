@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LidarIndoorNavigation"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
         Title="MainWindow" Height="450" Width="800">
@@ -13,10 +14,16 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="10">
+        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0">
             <Button Content="Start" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StartCommand}"/>
-            <Button Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5"/>
+            <Button Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StopCommand}"/>
             <Button Content="Reset" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5"/>
         </StackPanel>
+
+        <lvc:CartesianChart Grid.Row="1" 
+                            Series="{Binding Series}"
+                            MatchAxesScreenDataRatio="True">
+            
+        </lvc:CartesianChart>
     </Grid>
 </Window>
