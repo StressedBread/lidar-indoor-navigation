@@ -22,8 +22,9 @@
 
         <lvc:CartesianChart Grid.Row="1" 
                             Series="{Binding Series}"
-                            MatchAxesScreenDataRatio="True">
-            
+                            EasingFunction="{x:Null}"
+                            XAxes="{Binding XAxes}"
+                            YAxes="{Binding YAxes}">
         </lvc:CartesianChart>
     </Grid>
 </Window>

@@ -1,16 +1,12 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using System;
-using System.IO.Ports;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.Input;
-using SCIP_Library;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
+using SCIP_Library;
 using System.Collections.ObjectModel;
+using System.IO;
+using System.IO.Ports;
 
 namespace LidarIndoorNavigation.ViewModels
 {
@@ -18,7 +14,7 @@ namespace LidarIndoorNavigation.ViewModels
     {
         public static SerialPort? urg;
         int baudrate = 115200;
-        string comPort = "COM6";
+        string comPort = "COM7";
 
         const int GET_NUM = 1;
         const int start_step = 44;
@@ -28,57 +24,121 @@ namespace LidarIndoorNavigation.ViewModels
         List<long> distances = new();
         List<(double x, double y)> cartesianDistances = new();
 
+        private CancellationTokenSource cts = new();
+
         ObservableCollection<ObservablePoint> chartPoints = new();
+        public ISeries[] Series { get; set; }
+        public Axis[] XAxes { get; set; }
+        public Axis[] YAxes { get; set; }
 
         public IRelayCommand? StartCommand { get; }
+        public IRelayCommand? StopCommand { get; }
 
         public MainWindowViewModel()
         {
             StartCommand = new RelayCommand(StartScan);
+            StopCommand = new RelayCommand(StopScan);
 
+            Series =
+            [
+                new ScatterSeries<ObservablePoint>
+                {
+                    Values = chartPoints
+                }
+            ];
+
+            XAxes =
+            [
+                new Axis
+                {
+                    MinLimit = -5600,
+                    MaxLimit = 5600
+                }
+            ];
+
+            YAxes =
+            [
+                new Axis
+                {
+                    MinLimit = -5600,
+                    MaxLimit = 5600
+                }
+            ];
         }
+
+
 
         private void StartScan()
         {
-            urg = new SerialPort(comPort, baudrate);
+            cts = new CancellationTokenSource();
+            var token = cts.Token;
 
-            urg.NewLine = "\n\n";
-            urg.Open();
+            try { 
+                urg = new SerialPort(comPort, baudrate);
 
-            // Initialize SCIP2
-            urg.Write(SCIP_Writer.SCIP2());
-            urg.ReadLine(); // ignore echo back
+                urg.NewLine = "\n\n";
+                urg.Open();
 
-            // Start measurement (MD)
-            urg.Write(SCIP_Writer.MD(start_step, end_step));
-            string test = urg.ReadLine(); // ignore command echo
+                // Initialize SCIP2
+                urg.Write(SCIP_Writer.SCIP2());
+                urg.ReadLine(); // ignore echo back
 
-            if (urg != null)
+                // Start measurement (MD)
+                urg.Write(SCIP_Writer.MD(start_step, end_step));
+                urg.ReadLine(); // ignore command echo
+
+                if (urg != null)
+                {
+                    Task.Run(() =>
+                    {
+                        while (!token.IsCancellationRequested)
+                        {
+                            string receive_data = string.Empty;
+                            try
+                            {
+                                receive_data = urg.ReadLine(); // blocking read
+                            }
+                            catch (OperationCanceledException)
+                            {
+                                break; // user pressed stop
+                            }
+                            catch (IOException)
+                            {
+                                break; // serial port closed
+                            }
+                            long time_stamp = 0;
+                            SCIP_Reader.MD(receive_data, ref time_stamp, ref distances);
+                            
+                            cartesianDistances = ConvertToCartesian(distances);
+
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                chartPoints.Clear();
+                                foreach (var (x, y) in cartesianDistances)
+                                {
+                                    chartPoints.Add(new ObservablePoint(x, y));
+                                }
+                            });
+                        }
+                        urg.Close();
+                    }, token);
+                }
+                
+            }           
+            catch (Exception ex)
             {
-                for (int i = 0; i < GET_NUM; ++i)
-                {
-                    string receive_data = urg.ReadLine();                    
-                    long time_stamp = 0;
-                    SCIP_Reader.MD(receive_data, ref time_stamp, ref distances);
-                }
-
-                urg.Close();
-                cartesianDistances = ConvertToCartesian(distances);
-
-                chartPoints.Clear();
-                foreach (var (x, y) in cartesianDistances)
-                {
-                    chartPoints.Add(new ObservablePoint(x, y));
-                }
+                Console.WriteLine($"Error: {ex.Message}");
             }
         }
 
-        public ISeries[] Series { get; set; } = [
-                    new ScatterSeries<ObservablePoint>
-                    {
-                        Values = new ObservableCollection<ObservablePoint>()
-                    }
-                ];
+        private void StopScan()
+        {
+            cts.Cancel();
+            if (urg != null && urg.IsOpen)
+            {
+                urg.Close();
+            }
+        }
 
         private List<(double x, double y)> ConvertToCartesian(List<long> distances)
         {
