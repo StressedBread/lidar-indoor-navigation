@@ -7,10 +7,11 @@ using SCIP_Library;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Ports;
+using LidarIndoorNavigation.Helpers;
 
 namespace LidarIndoorNavigation.ViewModels
 {
-    internal class MainWindowViewModel : ObservableObject
+    internal partial class MainWindowViewModel : ObservableObject
     {
         public static SerialPort? urg;
         int baudrate = 115200;
@@ -24,9 +25,18 @@ namespace LidarIndoorNavigation.ViewModels
         List<long> distances = new();
         List<(double x, double y)> cartesianDistances = new();
 
+        PolarToCartesianConverter cartesianConverter = new();
+        ReactiveNavigation reactiveNavigation = new();
+        RobotController robotController = new();
+
         private CancellationTokenSource cts = new();
 
         ObservableCollection<ObservablePoint> chartPoints = new();
+        public ObservableCollection<string> ComPorts { get; } = new();
+
+        [ObservableProperty]
+        private string selectedPort = "";
+
         public ISeries[] Series { get; set; }
         public Axis[] XAxes { get; set; }
         public Axis[] YAxes { get; set; }
@@ -39,11 +49,14 @@ namespace LidarIndoorNavigation.ViewModels
             StartCommand = new RelayCommand(StartScan);
             StopCommand = new RelayCommand(StopScan);
 
+            LoadSerialPorts();
+
             Series =
             [
                 new ScatterSeries<ObservablePoint>
                 {
-                    Values = chartPoints
+                    Values = chartPoints,
+                    GeometrySize = 10
                 }
             ];
 
@@ -51,8 +64,8 @@ namespace LidarIndoorNavigation.ViewModels
             [
                 new Axis
                 {
-                    MinLimit = -5600,
-                    MaxLimit = 5600
+                    MinLimit = -3000,
+                    MaxLimit = 3000
                 }
             ];
 
@@ -60,13 +73,11 @@ namespace LidarIndoorNavigation.ViewModels
             [
                 new Axis
                 {
-                    MinLimit = -5600,
-                    MaxLimit = 5600
+                    MinLimit = -3000,
+                    MaxLimit = 3000
                 }
             ];
         }
-
-
 
         private void StartScan()
         {
@@ -100,25 +111,35 @@ namespace LidarIndoorNavigation.ViewModels
                             }
                             catch (OperationCanceledException)
                             {
-                                break; // user pressed stop
+                                break; 
                             }
                             catch (IOException)
                             {
-                                break; // serial port closed
+                                break; 
                             }
                             long time_stamp = 0;
                             SCIP_Reader.MD(receive_data, ref time_stamp, ref distances);
                             
-                            cartesianDistances = ConvertToCartesian(distances);
+                            DistancePointsStaticList.Clear();
+                            DistancePointsStaticList.Distances.AddRange(distances);
 
-                            App.Current.Dispatcher.Invoke(() =>
+                            cartesianDistances = cartesianConverter.ConvertToCartesian(DistancePointsStaticList.Distances);
+
+                            try
                             {
-                                chartPoints.Clear();
-                                foreach (var (x, y) in cartesianDistances)
+                                App.Current.Dispatcher.Invoke(() =>
                                 {
-                                    chartPoints.Add(new ObservablePoint(x, y));
-                                }
-                            });
+                                    chartPoints.Clear();
+                                    foreach (var (x, y) in cartesianDistances)
+                                    {
+                                        chartPoints.Add(new ObservablePoint(x, y));
+                                    }
+                                });
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error updating chart: {ex.Message}");
+                            }
                         }
                         urg.Close();
                     }, token);
@@ -134,23 +155,43 @@ namespace LidarIndoorNavigation.ViewModels
         private void StopScan()
         {
             cts.Cancel();
-            if (urg != null && urg.IsOpen)
+            if (urg != null)
             {
+                urg.Write(SCIP_Writer.QT()); // stop measurement mode
+                urg.ReadLine(); // ignore echo back
                 urg.Close();
             }
         }
 
-        private List<(double x, double y)> ConvertToCartesian(List<long> distances)
+        private void LoadSerialPorts()
         {
-            List<(double x, double y)> points = new List<(double x, double y)>();
-            for (int i = 0; i < distances.Count; ++i)
+            string[] ports = SerialPort.GetPortNames();
+            foreach (string port in ports)
             {
-                double angle = (start_step + i) * stepAngle;
-                double x = distances[i] * Math.Cos(angle * Math.PI / 180);
-                double y = distances[i] * Math.Sin(angle * Math.PI / 180);
-                points.Add((x, y));
+                ComPorts.Add(port);
             }
-            return points;
+        }
+
+        [RelayCommand]
+        private void OpenPort()
+        {
+            if (!string.IsNullOrEmpty(SelectedPort))
+            {
+                robotController.OpenSerialPort1(SelectedPort);
+                robotController.OpenSerialPort2(SelectedPort);
+            }
+        }
+
+        [RelayCommand]
+        private void ElectronicCommand()
+        {
+            robotController.ElectronicButton();
+        }
+
+        [RelayCommand]
+        private void EngineCommand()
+        {
+            robotController.EngineButton();
         }
     }
 }

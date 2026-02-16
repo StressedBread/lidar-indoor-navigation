@@ -17,7 +17,9 @@
         <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0">
             <Button Content="Start" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StartCommand}"/>
             <Button Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StopCommand}"/>
-            <Button Content="Reset" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5"/>
+            <ListBox Style="{StaticResource MaterialDesignListBox}" Margin="5" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort}" Width="auto" Height="auto"/>
+            <Button Content="Electronic" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ElectronicCommand}"/>
+            <Button Content="Engine" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding EngineCommand}"/>
         </StackPanel>
 
         <lvc:CartesianChart Grid.Row="1" 
