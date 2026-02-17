@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Ports;
 using LidarIndoorNavigation.Helpers;
+using System.Windows;
 
 namespace LidarIndoorNavigation.ViewModels
 {
@@ -15,7 +16,7 @@ namespace LidarIndoorNavigation.ViewModels
     {
         public static SerialPort? urg;
         int baudrate = 115200;
-        string comPort = "COM7";
+        //string comPort = "COM7";
 
         const int GET_NUM = 1;
         const int start_step = 44;
@@ -35,19 +36,29 @@ namespace LidarIndoorNavigation.ViewModels
         public ObservableCollection<string> ComPorts { get; } = new();
 
         [ObservableProperty]
-        private string selectedPort = "";
+        private string selectedPort1 = "";
+        [ObservableProperty]
+        private string selectedPort2 = "";
+        [ObservableProperty]
+        private string selectedPort3 = "";
 
         public ISeries[] Series { get; set; }
         public Axis[] XAxes { get; set; }
         public Axis[] YAxes { get; set; }
 
-        public IRelayCommand? StartCommand { get; }
+        public IAsyncRelayCommand? StartCommand { get; }
         public IRelayCommand? StopCommand { get; }
+        public IRelayCommand? OpenPortsCommand { get; }
+        public IRelayCommand? ElectronicCommand { get; }
+        public IRelayCommand? EngineCommand { get; }
 
         public MainWindowViewModel()
         {
-            StartCommand = new RelayCommand(StartScan);
+            StartCommand = new AsyncRelayCommand(StartScan);
             StopCommand = new RelayCommand(StopScan);
+            OpenPortsCommand = new RelayCommand(OpenPorts);
+            ElectronicCommand = new RelayCommand(Electronic);
+            EngineCommand = new RelayCommand(Engine);
 
             LoadSerialPorts();
 
@@ -79,29 +90,40 @@ namespace LidarIndoorNavigation.ViewModels
             ];
         }
 
-        private void StartScan()
+        private async Task StartScan()
         {
             cts = new CancellationTokenSource();
             var token = cts.Token;
 
-            try { 
-                urg = new SerialPort(comPort, baudrate);
-
-                urg.NewLine = "\n\n";
-                urg.Open();
-
-                // Initialize SCIP2
-                urg.Write(SCIP_Writer.SCIP2());
-                urg.ReadLine(); // ignore echo back
-
-                // Start measurement (MD)
-                urg.Write(SCIP_Writer.MD(start_step, end_step));
-                urg.ReadLine(); // ignore command echo
-
-                if (urg != null)
-                {
-                    Task.Run(() =>
+            try {
+                await Task.Run(() =>
+                { 
+                    urg = new SerialPort(SelectedPort1, baudrate) 
                     {
+                        NewLine = "\n\n",
+                        ReadTimeout = 3000,
+                        WriteTimeout = 3000
+                    };
+
+                    try
+                    {
+                        urg.Open();
+
+                        // Initialize SCIP2
+                        urg.Write(SCIP_Writer.SCIP2());
+                        urg.ReadLine(); // ignore echo back
+
+                        // Start measurement (MD)
+                        urg.Write(SCIP_Writer.MD(start_step, end_step));
+                        urg.ReadLine(); // ignore command echo
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error opening serial port: {ex.Message}");
+                        urg.Close();
+                        return;
+                    }
+
                         while (!token.IsCancellationRequested)
                         {
                             string receive_data = string.Empty;
@@ -138,17 +160,17 @@ namespace LidarIndoorNavigation.ViewModels
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine($"Error updating chart: {ex.Message}");
+                                MessageBox.Show($"Error updating chart: {ex.Message}");
                             }
                         }
                         urg.Close();
-                    }, token);
-                }
+                }, token);
+                
                 
             }           
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                MessageBox.Show($"Error: {ex.Message}");
             }
         }
 
@@ -172,24 +194,21 @@ namespace LidarIndoorNavigation.ViewModels
             }
         }
 
-        [RelayCommand]
-        private void OpenPort()
+        private void OpenPorts()
         {
-            if (!string.IsNullOrEmpty(SelectedPort))
+            if (!string.IsNullOrEmpty(SelectedPort2) && !string.IsNullOrEmpty(SelectedPort3))
             {
-                robotController.OpenSerialPort1(SelectedPort);
-                robotController.OpenSerialPort2(SelectedPort);
+                robotController.OpenSerialPort1(SelectedPort2);
+                robotController.OpenSerialPort2(SelectedPort3);
             }
         }
 
-        [RelayCommand]
-        private void ElectronicCommand()
+        private void Electronic()
         {
             robotController.ElectronicButton();
         }
 
-        [RelayCommand]
-        private void EngineCommand()
+        private void Engine()
         {
             robotController.EngineButton();
         }

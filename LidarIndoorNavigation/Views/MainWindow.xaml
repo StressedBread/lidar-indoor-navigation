@@ -12,17 +12,42 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0">
+        <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="0">
             <Button Content="Start" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StartCommand}"/>
             <Button Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StopCommand}"/>
-            <ListBox Style="{StaticResource MaterialDesignListBox}" Margin="5" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort}" Width="auto" Height="auto"/>
+            <Button Content="Open Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding OpenPortsCommand}"/>
             <Button Content="Electronic" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ElectronicCommand}"/>
             <Button Content="Engine" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding EngineCommand}"/>
         </StackPanel>
 
-        <lvc:CartesianChart Grid.Row="1" 
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <StackPanel Orientation ="Vertical" Margin="5" Grid.Column="0">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Scanner port" VerticalAlignment="Center" Margin="5"/>
+                <ComboBox Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort1}"/>
+            </StackPanel>
+
+            <StackPanel Orientation ="Vertical" Margin="5" Grid.Column="1">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Electronic port" VerticalAlignment="Center" Margin="5"/>
+                <ComboBox Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort2}"/>
+            </StackPanel>
+
+            <StackPanel Orientation ="Vertical" Margin="5" Grid.Column="2">
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Engine port" VerticalAlignment="Center" Margin="5"/>
+                <ComboBox Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort3}"/>
+            </StackPanel>
+        </Grid>
+
+        <lvc:CartesianChart Grid.Row="2" 
                             Series="{Binding Series}"
                             EasingFunction="{x:Null}"
                             XAxes="{Binding XAxes}"

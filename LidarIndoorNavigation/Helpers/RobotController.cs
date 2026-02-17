@@ -127,12 +127,6 @@ namespace LidarIndoorNavigation.Helpers
                     selectedSerialPort1.Write("|MM1\r");  //MOTOR ON
                     Engine = true;
                 }
-                else
-                {
-                }
-            }
-            else
-            {
             }
         }
 
