@@ -36,11 +36,11 @@ namespace LidarIndoorNavigation.ViewModels
         public ObservableCollection<string> ComPorts { get; } = new();
 
         [ObservableProperty]
-        private string selectedPort1 = "";
+        private string? selectedPort1 = "";
         [ObservableProperty]
-        private string selectedPort2 = "";
+        private string? selectedPort2 = "";
         [ObservableProperty]
-        private string selectedPort3 = "";
+        private string? selectedPort3 = "";
 
         public ISeries[] Series { get; set; }
         public Axis[] XAxes { get; set; }
@@ -97,13 +97,21 @@ namespace LidarIndoorNavigation.ViewModels
 
             try {
                 await Task.Run(() =>
-                { 
-                    urg = new SerialPort(SelectedPort1, baudrate) 
+                {
+                    try
                     {
-                        NewLine = "\n\n",
-                        ReadTimeout = 3000,
-                        WriteTimeout = 3000
-                    };
+                        urg = new SerialPort(SelectedPort1, baudrate)
+                        {
+                            NewLine = "\n\n",
+                            ReadTimeout = 3000,
+                            WriteTimeout = 3000
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error initializing serial port: {ex.Message}");
+                        return;
+                    }
 
                     try
                     {
@@ -162,7 +170,10 @@ namespace LidarIndoorNavigation.ViewModels
                             {
                                 MessageBox.Show($"Error updating chart: {ex.Message}");
                             }
-                        }
+
+                        (int R, int Mid, int L) minDistances = reactiveNavigation.CalculateMinDistanceLessSectors();
+                        reactiveNavigation.DecisionLogicLessSectors(minDistances);
+                    }
                         urg.Close();
                 }, token);
                 
@@ -180,8 +191,8 @@ namespace LidarIndoorNavigation.ViewModels
             if (urg != null)
             {
                 urg.Write(SCIP_Writer.QT()); // stop measurement mode
-                urg.ReadLine(); // ignore echo back
                 urg.Close();
+                chartPoints.Clear();
             }
         }
 

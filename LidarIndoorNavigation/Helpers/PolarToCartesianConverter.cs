@@ -17,6 +17,11 @@ namespace LidarIndoorNavigation.Helpers
             cartesianPoints.Clear();
             for (int i = 0; i < distances.Count; ++i)
             {
+                if (distances[i] <= 20 || distances[i] > 4600)
+                {
+                    continue;
+                }
+
                 double angle = -(start_step + i - 384) * stepAngle;
                 double x = distances[i] * Math.Sin(angle * Math.PI / 180);
                 double y = distances[i] * Math.Cos(angle * Math.PI / 180);
