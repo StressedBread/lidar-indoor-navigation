@@ -95,7 +95,8 @@ namespace LidarIndoorNavigation.ViewModels
             cts = new CancellationTokenSource();
             var token = cts.Token;
 
-            try {
+            try 
+            {
                 await Task.Run(() =>
                 {
                     try
@@ -147,6 +148,10 @@ namespace LidarIndoorNavigation.ViewModels
                             {
                                 break; 
                             }
+                            catch (Exception ex)
+                            { 
+                                break;
+                            }
                             long time_stamp = 0;
                             SCIP_Reader.MD(receive_data, ref time_stamp, ref distances);
                             
@@ -170,9 +175,12 @@ namespace LidarIndoorNavigation.ViewModels
                             {
                                 MessageBox.Show($"Error updating chart: {ex.Message}");
                             }
-
                         (int R, int Mid, int L) minDistances = reactiveNavigation.CalculateMinDistanceLessSectors();
-                        reactiveNavigation.DecisionLogicLessSectors(minDistances);
+                        System.Diagnostics.Debug.WriteLine(minDistances);
+                        var decision = reactiveNavigation.DecisionLogicLessSectors(minDistances);
+                        System.Diagnostics.Debug.WriteLine(decision);
+
+                        robotController.Movement(decision);
                     }
                         urg.Close();
                 }, token);

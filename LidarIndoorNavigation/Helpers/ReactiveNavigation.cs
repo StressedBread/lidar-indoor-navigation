@@ -29,7 +29,7 @@ namespace LidarIndoorNavigation.Helpers
             sideSectorSizeSteps = (end_step - start_step) / sectors;
             middleSectorSizeSteps = sideSectorSizeSteps + 2;
 
-            lessSectorsSizeSteps = (end_step - start_step) / sectors;
+            lessSectorsSizeSteps = (end_step - start_step) / lessSectors;
         }
 
         public (int RB, int RF, int Mid, int LF, int LB) CalculateMinDistance()
@@ -100,13 +100,13 @@ namespace LidarIndoorNavigation.Helpers
                         currentSectorR = (int)DistancePointsStaticList.Distances[i];
                 }
 
-                else if (i >= lessSectorsSizeSteps && i <= 2 * sideSectorSizeSteps)
+                else if (i >= lessSectorsSizeSteps && i <= 2 * lessSectorsSizeSteps)
                 {
                     if (currentSectorMid > (int)DistancePointsStaticList.Distances[i])
                         currentSectorMid = (int)DistancePointsStaticList.Distances[i];
                 }
 
-                else if (i >= 2 * sideSectorSizeSteps && i <= end_step - lessSectorsSizeSteps)
+                else if (i >= 2 * lessSectorsSizeSteps && i <=  3 * lessSectorsSizeSteps)
                 {
                     if (currentSectorL > (int)DistancePointsStaticList.Distances[i])
                         currentSectorL = (int)DistancePointsStaticList.Distances[i];

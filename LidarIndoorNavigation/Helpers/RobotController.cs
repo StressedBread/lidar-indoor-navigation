@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using LidarIndoorNavigation.Models;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -135,7 +136,7 @@ namespace LidarIndoorNavigation.Helpers
         //Posielanie Stringu do seriovej linky// 
         //************************************//
 
-        /*private void LabelReceivedData_TextChanged(object sender, EventArgs e)
+        internal void Movement(MovementCommands command)
         {
             if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen)
             {
@@ -143,7 +144,7 @@ namespace LidarIndoorNavigation.Helpers
                 try
                 {
 
-                    string receivedData = labelReceivedData.Text;
+                    /*string receivedData = labelReceivedData.Text;
 
                     if (receivedData[0] == 'X')
                     {
@@ -169,8 +170,8 @@ namespace LidarIndoorNavigation.Helpers
                         }
                     }*/
 
-                    //if (labelReceivedData.Text == "Forward")   /*FORWARD*/
-                    /*{
+                    if (command == MovementCommands.Forward)   /*FORWARD*/
+                    {
 
                         string controlCommand = ("A" + "F" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
                         selectedSerialPort1.Write(controlCommand);
@@ -178,7 +179,7 @@ namespace LidarIndoorNavigation.Helpers
                         string controlCommand2 = ("C" + "F" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
                         selectedSerialPort1.Write(controlCommand2);
 
-                    }*/
+                    }
 
                     //if (labelReceivedData.Text == "Backwards")   /*BACKWARDS*/
                     /*{
@@ -191,8 +192,8 @@ namespace LidarIndoorNavigation.Helpers
 
                     }*/
 
-                    //if (labelReceivedData.Text == "Left")   /*LEFT*/
-                    /*{
+                    if (command == MovementCommands.TurnLeft)   /*LEFT*/
+                    {
 
                         string controlCommand = ("A" + "B" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
                         selectedSerialPort1.Write(controlCommand);
@@ -200,10 +201,10 @@ namespace LidarIndoorNavigation.Helpers
                         string controlCommand2 = ("C" + "B" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
                         selectedSerialPort1.Write(controlCommand2);
 
-                    }*/
+                    }
 
-                    //if (labelReceivedData.Text == "Right")   /*RIGHT*/
-                    /*{
+                    if (command == MovementCommands.TurnRight)   /*RIGHT*/
+                    {
 
                         string controlCommand = ("A" + "F" + completSequenceForOut + "B" + completSequenceForOut + SECUREMARK);
                         selectedSerialPort1.Write(controlCommand);
@@ -211,12 +212,12 @@ namespace LidarIndoorNavigation.Helpers
                         string controlCommand2 = ("C" + "F" + completSequenceForOut + "B" + completSequenceForOut + SECUREMARK);
                         selectedSerialPort1.Write(controlCommand2);
 
-                    }*/
+                    }
 
 
 
-                    //if (labelReceivedData.Text == "STOP")   /*STOP*/
-                    /*{
+                    if (command == MovementCommands.Stop)   /*STOP*/
+                    {
 
                         string controlCommand = ("A" + "F" + "0" + "F" + "0" + SECUREMARK);
                         selectedSerialPort1.Write(controlCommand);
@@ -231,7 +232,7 @@ namespace LidarIndoorNavigation.Helpers
                     MessageBox.Show("Chyba pri odosielaní stringu cez sériovú linku: " + ex.Message);
                 }
             }
-        }*/
+        }
 
         //******************//
         //Zapnutie počúvania//
