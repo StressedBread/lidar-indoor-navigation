@@ -148,7 +148,7 @@ namespace LidarIndoorNavigation.ViewModels
                             {
                                 break; 
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             { 
                                 break;
                             }
