@@ -125,11 +125,7 @@ namespace LidarIndoorNavigation.Helpers
         {
             if (sectors.Mid < safeDistanceMiddle)
             {
-                if (sectors.R < safeDistanceSide && sectors.L < safeDistanceSide)
-                {
-                    return MovementCommands.Stop;
-                }
-                else if (sectors.R < safeDistanceSide)
+                if (sectors.R < safeDistanceSide)
                 {
                     return MovementCommands.TurnLeft;
                 }
@@ -137,7 +133,6 @@ namespace LidarIndoorNavigation.Helpers
                 {
                     return MovementCommands.TurnRight;
                 }
-
                 else
                 {
                     return MovementCommands.Stop;

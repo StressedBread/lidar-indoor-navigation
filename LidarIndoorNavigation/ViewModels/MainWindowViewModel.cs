@@ -18,10 +18,8 @@ namespace LidarIndoorNavigation.ViewModels
         int baudrate = 115200;
         //string comPort = "COM7";
 
-        const int GET_NUM = 1;
         const int start_step = 44;
         int end_step = 725;
-        const double stepAngle = 0.3515625;
 
         List<long> distances = new();
         List<(double x, double y)> cartesianDistances = new();
