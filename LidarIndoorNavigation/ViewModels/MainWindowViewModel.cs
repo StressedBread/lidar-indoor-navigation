@@ -138,18 +138,11 @@ namespace LidarIndoorNavigation.ViewModels
                             {
                                 receive_data = urg.ReadLine(); // blocking read
                             }
-                            catch (OperationCanceledException)
-                            {
-                                break; 
-                            }
-                            catch (IOException)
-                            {
-                                break; 
-                            }
                             catch (Exception)
                             { 
                                 break;
                             }
+
                             long time_stamp = 0;
                             SCIP_Reader.MD(receive_data, ref time_stamp, ref distances);
                             
@@ -173,16 +166,16 @@ namespace LidarIndoorNavigation.ViewModels
                             {
                                 MessageBox.Show($"Error updating chart: {ex.Message}");
                             }
-                        (int R, int Mid, int L) minDistances = reactiveNavigation.CalculateMinDistanceLessSectors();
-                        System.Diagnostics.Debug.WriteLine(minDistances);
-                        var decision = reactiveNavigation.DecisionLogicLessSectors(minDistances);
-                        System.Diagnostics.Debug.WriteLine(decision);
 
-                        robotController.Movement(decision);
-                    }
+                            (int R, int Mid, int L) minDistances = reactiveNavigation.CalculateMinDistanceLessSectors();
+                            System.Diagnostics.Debug.WriteLine(minDistances);
+                            var decision = reactiveNavigation.DecisionLogicLessSectors(minDistances);
+                            System.Diagnostics.Debug.WriteLine(decision);
+
+                            robotController.Movement(decision);
+                        }
                         urg.Close();
-                }, token);
-                
+                }, token);                
                 
             }           
             catch (Exception ex)
@@ -197,8 +190,8 @@ namespace LidarIndoorNavigation.ViewModels
             if (urg != null)
             {
                 urg.Write(SCIP_Writer.QT()); // stop measurement mode
-                urg.Close();
                 chartPoints.Clear();
+                robotController.Movement(Models.MovementCommands.Stop);
             }
         }
 

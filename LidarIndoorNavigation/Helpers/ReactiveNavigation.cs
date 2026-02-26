@@ -141,8 +141,7 @@ namespace LidarIndoorNavigation.Helpers
             else
             {
                 return MovementCommands.Forward;
-            }
-            
+            }            
         }
     }
 }

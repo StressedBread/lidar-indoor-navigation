@@ -179,6 +179,7 @@ namespace LidarIndoorNavigation.Helpers
                         string controlCommand2 = ("C" + "F" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
                         selectedSerialPort1.Write(controlCommand2);
 
+                        System.Diagnostics.Debug.WriteLine(controlCommand);
                     }
 
                     //if (labelReceivedData.Text == "Backwards")   /*BACKWARDS*/
@@ -201,6 +202,7 @@ namespace LidarIndoorNavigation.Helpers
                         string controlCommand2 = ("C" + "B" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
                         selectedSerialPort1.Write(controlCommand2);
 
+                        System.Diagnostics.Debug.WriteLine(controlCommand);
                     }
 
                     if (command == MovementCommands.TurnRight)   /*RIGHT*/
@@ -212,6 +214,7 @@ namespace LidarIndoorNavigation.Helpers
                         string controlCommand2 = ("C" + "F" + completSequenceForOut + "B" + completSequenceForOut + SECUREMARK);
                         selectedSerialPort1.Write(controlCommand2);
 
+                        System.Diagnostics.Debug.WriteLine(controlCommand);
                     }
 
 
@@ -225,6 +228,7 @@ namespace LidarIndoorNavigation.Helpers
                         string controlCommand2 = ("C" + "F" + "0" + "F" + "0" + SECUREMARK);
                         selectedSerialPort1.Write(controlCommand2);
 
+                        System.Diagnostics.Debug.WriteLine(controlCommand);
                     }
                 }
                 catch (Exception ex)
