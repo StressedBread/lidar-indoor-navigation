@@ -18,6 +18,8 @@ namespace LidarIndoorNavigation.ViewModels
         int baudrate = 115200;
         //string comPort = "COM7";
 
+        bool arePortsOpen = false;
+
         const int start_step = 44;
         int end_step = 725;
 
@@ -208,8 +210,15 @@ namespace LidarIndoorNavigation.ViewModels
         {
             if (!string.IsNullOrEmpty(SelectedPort2) && !string.IsNullOrEmpty(SelectedPort3))
             {
-                robotController.OpenSerialPort1(SelectedPort2);
-                robotController.OpenSerialPort2(SelectedPort3);
+                if (!arePortsOpen)
+                {
+                    robotController.OpenSerialPort1(SelectedPort2);
+                    robotController.OpenSerialPort2(SelectedPort3);
+                }
+                else
+                {
+                    robotController.ClosePorts();
+                }
             }
         }
 

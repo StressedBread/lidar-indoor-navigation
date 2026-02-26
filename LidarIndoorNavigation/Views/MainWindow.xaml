@@ -18,7 +18,7 @@
         <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="0">
             <Button Content="Start" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StartCommand}"/>
             <Button Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StopCommand}"/>
-            <Button Content="Open Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding OpenPortsCommand}"/>
+            <Button Content="Open/Close Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding OpenPortsCommand}"/>
             <Button Content="Electronic" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ElectronicCommand}"/>
             <Button Content="Engine" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding EngineCommand}"/>
         </StackPanel>

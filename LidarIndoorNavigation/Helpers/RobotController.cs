@@ -51,7 +51,7 @@ namespace LidarIndoorNavigation.Helpers
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Chyba pri otváraní sériového portu: " + ex.Message);
+                    MessageBox.Show("Chyba pri otváraní sériového portu 2: " + ex.Message);
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace LidarIndoorNavigation.Helpers
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Chyba pri otváraní sériového portu: " + ex.Message);
+                    MessageBox.Show("Chyba pri otváraní sériového portu 1: " + ex.Message);
                 }
             }
         }
@@ -401,20 +401,15 @@ namespace LidarIndoorNavigation.Helpers
         //Tlačídlo Exit pre vypnutie programu//
         //***********************************//
 
-        /*private void btnExit_Click(object sender, EventArgs e)
+        internal void ClosePorts()
         {
-            if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen)
+            if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen && selectedSerialPort2 != null && selectedSerialPort2.IsOpen)
             {
                 selectedSerialPort1.Close();
-            }
-
-            if (selectedSerialPort2 != null && selectedSerialPort2.IsOpen)
-            {
                 selectedSerialPort2.Close();
+
+                MessageBox.Show("Robot serial ports were closed successfully.");
             }
-            Disconnect();
-            MessageBox.Show("Program bol vypnutý.");
-            Application.Exit();
-        }*/
+        }
     }
 }
