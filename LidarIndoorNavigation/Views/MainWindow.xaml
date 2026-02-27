@@ -36,16 +36,16 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Row="0">
-                <Button Content="Up" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ForwardCommand}"/>    
+                <RepeatButton Content="Up" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ForwardCommand}"/>    
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.Row="1">
-                <Button Content="Left" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding LeftCommand}"/>
-                <Button Content="Right" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding RightCommand}"/>
+                <RepeatButton Content="Left" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding LeftCommand}"/>
+                <RepeatButton Content="Right" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding RightCommand}"/>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.Row="2">
-                <Button Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StopRobotCommand}"/>
+                <RepeatButton Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StopRobotCommand}"/>
             </StackPanel>
 
         </Grid>
