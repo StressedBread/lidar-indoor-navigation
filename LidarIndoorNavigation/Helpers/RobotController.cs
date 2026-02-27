@@ -138,6 +138,7 @@ namespace LidarIndoorNavigation.Helpers
 
         internal void Movement(MovementCommands command)
         {
+            System.Diagnostics.Debug.WriteLine(command);
             if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen)
             {
 
@@ -230,6 +231,7 @@ namespace LidarIndoorNavigation.Helpers
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
                     }
+
                 }
                 catch (Exception ex)
                 {

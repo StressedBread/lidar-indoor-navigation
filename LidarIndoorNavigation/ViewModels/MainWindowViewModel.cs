@@ -9,6 +9,7 @@ using System.IO;
 using System.IO.Ports;
 using LidarIndoorNavigation.Helpers;
 using System.Windows;
+using LidarIndoorNavigation.Models;
 
 namespace LidarIndoorNavigation.ViewModels
 {
@@ -172,11 +173,11 @@ namespace LidarIndoorNavigation.ViewModels
                             (int R, int Mid, int L) minDistances = reactiveNavigation.CalculateMinDistanceLessSectors();
                             System.Diagnostics.Debug.WriteLine(minDistances);
                             var decision = reactiveNavigation.DecisionLogicLessSectors(minDistances);
-                            System.Diagnostics.Debug.WriteLine(decision);
 
                             robotController.Movement(decision);
                         }
-                        urg.Close();
+                    robotController.Movement(MovementCommands.Stop);
+                    urg.Close();
                 }, token);                
                 
             }           
@@ -193,7 +194,6 @@ namespace LidarIndoorNavigation.ViewModels
             {
                 urg.Write(SCIP_Writer.QT()); // stop measurement mode
                 chartPoints.Clear();
-                robotController.Movement(Models.MovementCommands.Stop);
             }
         }
 
