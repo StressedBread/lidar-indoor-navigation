@@ -17,7 +17,6 @@ namespace LidarIndoorNavigation.ViewModels
     {
         public static SerialPort? urg;
         int baudrate = 115200;
-        //string comPort = "COM7";
 
         bool arePortsOpen = false;
 
@@ -52,6 +51,7 @@ namespace LidarIndoorNavigation.ViewModels
         public IRelayCommand? OpenPortsCommand { get; }
         public IRelayCommand? ElectronicCommand { get; }
         public IRelayCommand? EngineCommand { get; }
+        public IAsyncRelayCommand? CheckPortsCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -60,6 +60,7 @@ namespace LidarIndoorNavigation.ViewModels
             OpenPortsCommand = new RelayCommand(OpenPorts);
             ElectronicCommand = new RelayCommand(Electronic);
             EngineCommand = new RelayCommand(Engine);
+            CheckPortsCommand = new AsyncRelayCommand(CheckPorts);
 
             LoadSerialPorts();
 
@@ -230,6 +231,11 @@ namespace LidarIndoorNavigation.ViewModels
         private void Engine()
         {
             robotController.EngineButton();
+        }
+
+        private async Task CheckPorts()
+        {
+
         }
     }
 }

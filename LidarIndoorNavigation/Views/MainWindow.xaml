@@ -13,6 +13,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="0">
@@ -21,9 +22,12 @@
             <Button Content="Open/Close Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding OpenPortsCommand}"/>
             <Button Content="Electronic" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ElectronicCommand}"/>
             <Button Content="Engine" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding EngineCommand}"/>
+            <Button Content="CheckPorts" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding CheckPortsCommand}"/>
         </StackPanel>
 
-        <Grid Grid.Row="1">
+        <TextBlock Grid.Row="1" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="5" Text="{Binding RobotCommandString}"/>
+
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -47,7 +51,7 @@
             </StackPanel>
         </Grid>
 
-        <lvc:CartesianChart Grid.Row="2" 
+        <lvc:CartesianChart Grid.Row="3" 
                             Series="{Binding Series}"
                             EasingFunction="{x:Null}"
                             XAxes="{Binding XAxes}"

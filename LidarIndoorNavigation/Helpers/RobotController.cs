@@ -15,12 +15,12 @@ namespace LidarIndoorNavigation.Helpers
 {
     public class RobotController
     {
-        private Stream stream;
-        private Guid uuid = new Guid("8ce255c0-200a-11e0-ac64-0800200c9a66");
-        private Thread receiveThread;
-        private bool receiving;
-        private SerialPort selectedSerialPort1; //Seriová linka pre Motory
-        private SerialPort selectedSerialPort2; //Seriová linka pre Napájanie
+        //private Stream stream;
+        //private Guid uuid = new Guid("8ce255c0-200a-11e0-ac64-0800200c9a66");
+        //private Thread receiveThread;
+        //private bool receiving;
+        private SerialPort? selectedSerialPort1; //Seriová linka pre Motory
+        private SerialPort? selectedSerialPort2; //Seriová linka pre Napájanie
         string SECUREMARK = "*";
         string completSequenceForOut = "5000";
         bool Electronic = false;
@@ -51,7 +51,7 @@ namespace LidarIndoorNavigation.Helpers
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Chyba pri otváraní sériového portu 2: " + ex.Message);
+                    MessageBox.Show("Error opening serial port 2: " + ex.Message);
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace LidarIndoorNavigation.Helpers
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Chyba pri otváraní sériového portu 1: " + ex.Message);
+                    MessageBox.Show("Error opening serial port 1: " + ex.Message);
                 }
             }
         }
@@ -141,36 +141,8 @@ namespace LidarIndoorNavigation.Helpers
             System.Diagnostics.Debug.WriteLine(command);
             if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen)
             {
-
                 try
                 {
-
-                    /*string receivedData = labelReceivedData.Text;
-
-                    if (receivedData[0] == 'X')
-                    {
-                        if (!string.IsNullOrEmpty(receivedData) && receivedData.Length >= 3 && receivedData[0] == 'X')
-                        {
-
-                            string completSequenceForOut = receivedData.Substring(1);
-                            tbInfo.Invoke(new Action(() =>
-                            {
-                                tbInfo.AppendText(completSequenceForOut + Environment.NewLine);
-                            }));
-
-                        }
-
-                        else
-                        {
-
-                            tbInfo.Invoke(new Action(() =>
-                            {
-                                tbInfo.AppendText("Bola zadaná nižšia rýchlosť ako 10" + Environment.NewLine);
-                            }));
-
-                        }
-                    }*/
-
                     if (command == MovementCommands.Forward)   /*FORWARD*/
                     {
 
@@ -181,6 +153,7 @@ namespace LidarIndoorNavigation.Helpers
                         selectedSerialPort1.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
+                        System.Diagnostics.Debug.WriteLine(controlCommand2);
                     }
 
                     //if (labelReceivedData.Text == "Backwards")   /*BACKWARDS*/
@@ -204,6 +177,7 @@ namespace LidarIndoorNavigation.Helpers
                         selectedSerialPort1.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
+                        System.Diagnostics.Debug.WriteLine(controlCommand2);
                     }
 
                     if (command == MovementCommands.TurnRight)   /*RIGHT*/
@@ -216,9 +190,8 @@ namespace LidarIndoorNavigation.Helpers
                         selectedSerialPort1.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
+                        System.Diagnostics.Debug.WriteLine(controlCommand2);
                     }
-
-
 
                     if (command == MovementCommands.Stop)   /*STOP*/
                     {
@@ -230,12 +203,12 @@ namespace LidarIndoorNavigation.Helpers
                         selectedSerialPort1.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
+                        System.Diagnostics.Debug.WriteLine(controlCommand2);
                     }
-
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Chyba pri odosielaní stringu cez sériovú linku: " + ex.Message);
+                    MessageBox.Show("Error sending string to robot: " + ex.Message);
                 }
             }
         }
