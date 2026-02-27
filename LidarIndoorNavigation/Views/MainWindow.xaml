@@ -14,6 +14,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="0">
@@ -28,6 +29,28 @@
         <TextBlock Grid.Row="1" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="5" Text="{Binding RobotCommandString}"/>
 
         <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <StackPanel Orientation="Horizontal" Grid.Row="0">
+                <Button Content="Up" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ForwardCommand}"/>    
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                <Button Content="Left" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding LeftCommand}"/>
+                <Button Content="Right" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding RightCommand}"/>
+            </StackPanel>
+            
+            <StackPanel Orientation="Horizontal" Grid.Row="2">
+                <Button Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StopRobotCommand}"/>
+            </StackPanel>
+
+        </Grid>
+
+        <Grid Grid.Row="3">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="Auto"/>
@@ -51,7 +74,7 @@
             </StackPanel>
         </Grid>
 
-        <lvc:CartesianChart Grid.Row="3" 
+        <lvc:CartesianChart Grid.Row="4" 
                             Series="{Binding Series}"
                             EasingFunction="{x:Null}"
                             XAxes="{Binding XAxes}"

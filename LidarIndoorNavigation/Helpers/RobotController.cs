@@ -65,7 +65,7 @@ namespace LidarIndoorNavigation.Helpers
             if (portName != null || portName != string.Empty)
             {
                 selectedSerialPort1 = new SerialPort(portName);
-                selectedSerialPort1.BaudRate = 9600;
+                selectedSerialPort1.BaudRate = 115200;
                 selectedSerialPort1.DataBits = 8;
                 selectedSerialPort1.Parity = Parity.None;
                 selectedSerialPort1.StopBits = StopBits.One;
@@ -139,6 +139,8 @@ namespace LidarIndoorNavigation.Helpers
         internal void Movement(MovementCommands command)
         {
             System.Diagnostics.Debug.WriteLine(command);
+
+
             if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen)
             {
                 try

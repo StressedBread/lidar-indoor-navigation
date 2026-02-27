@@ -53,6 +53,11 @@ namespace LidarIndoorNavigation.ViewModels
         public IRelayCommand? EngineCommand { get; }
         public IAsyncRelayCommand? CheckPortsCommand { get; }
 
+        public IAsyncRelayCommand? ForwardCommand { get; }
+        public IAsyncRelayCommand? LeftCommand { get; }
+        public IAsyncRelayCommand? RightCommand { get; }
+        public IAsyncRelayCommand? StopRobotCommand { get; }
+
         public MainWindowViewModel()
         {
             StartCommand = new AsyncRelayCommand(StartScan);
@@ -61,6 +66,10 @@ namespace LidarIndoorNavigation.ViewModels
             ElectronicCommand = new RelayCommand(Electronic);
             EngineCommand = new RelayCommand(Engine);
             CheckPortsCommand = new AsyncRelayCommand(CheckPorts);
+            ForwardCommand = new AsyncRelayCommand(Forward);
+            LeftCommand = new AsyncRelayCommand(Left);
+            RightCommand = new AsyncRelayCommand(Right);
+            StopRobotCommand = new AsyncRelayCommand(Stop);
 
             LoadSerialPorts();
 
@@ -97,7 +106,7 @@ namespace LidarIndoorNavigation.ViewModels
             cts = new CancellationTokenSource();
             var token = cts.Token;
 
-            try 
+            try
             {
                 await Task.Run(() =>
                 {
@@ -135,53 +144,53 @@ namespace LidarIndoorNavigation.ViewModels
                         return;
                     }
 
-                        while (!token.IsCancellationRequested)
+                    while (!token.IsCancellationRequested)
+                    {
+                        string receive_data = string.Empty;
+                        try
                         {
-                            string receive_data = string.Empty;
-                            try
-                            {
-                                receive_data = urg.ReadLine(); // blocking read
-                            }
-                            catch (Exception)
-                            { 
-                                break;
-                            }
-
-                            long time_stamp = 0;
-                            SCIP_Reader.MD(receive_data, ref time_stamp, ref distances);
-                            
-                            DistancePointsStaticList.Clear();
-                            DistancePointsStaticList.Distances.AddRange(distances);
-
-                            cartesianDistances = cartesianConverter.ConvertToCartesian(DistancePointsStaticList.Distances);
-
-                            try
-                            {
-                                App.Current.Dispatcher.Invoke(() =>
-                                {
-                                    chartPoints.Clear();
-                                    foreach (var (x, y) in cartesianDistances)
-                                    {
-                                        chartPoints.Add(new ObservablePoint(x, y));
-                                    }
-                                });
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show($"Error updating chart: {ex.Message}");
-                            }
-
-                            (int R, int Mid, int L) minDistances = reactiveNavigation.CalculateMinDistanceLessSectors();
-                            System.Diagnostics.Debug.WriteLine(minDistances);
-                            var decision = reactiveNavigation.DecisionLogicLessSectors(minDistances);
-
-                            robotController.Movement(decision);
+                            receive_data = urg.ReadLine(); // blocking read
                         }
+                        catch (Exception)
+                        {
+                            break;
+                        }
+
+                        long time_stamp = 0;
+                        SCIP_Reader.MD(receive_data, ref time_stamp, ref distances);
+
+                        DistancePointsStaticList.Clear();
+                        DistancePointsStaticList.Distances.AddRange(distances);
+
+                        cartesianDistances = cartesianConverter.ConvertToCartesian(DistancePointsStaticList.Distances);
+
+                        try
+                        {
+                            App.Current.Dispatcher.Invoke(() =>
+                            {
+                                chartPoints.Clear();
+                                foreach (var (x, y) in cartesianDistances)
+                                {
+                                    chartPoints.Add(new ObservablePoint(x, y));
+                                }
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Error updating chart: {ex.Message}");
+                        }
+
+                        (int R, int Mid, int L) minDistances = reactiveNavigation.CalculateMinDistanceLessSectors();
+                        System.Diagnostics.Debug.WriteLine(minDistances);
+                        var decision = reactiveNavigation.DecisionLogicLessSectors(minDistances);
+
+                        robotController.Movement(decision);
+                    }
                     robotController.Movement(MovementCommands.Stop);
                     urg.Close();
-                }, token);                
-                
-            }           
+                }, token);
+
+            }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}");
@@ -236,6 +245,26 @@ namespace LidarIndoorNavigation.ViewModels
         private async Task CheckPorts()
         {
 
+        }
+
+        private async Task Forward()
+        {
+            robotController.Movement(MovementCommands.Forward);
+        }
+
+        private async Task Left()
+        {
+            robotController.Movement(MovementCommands.TurnLeft);
+        }
+
+        private async Task Right()
+        {
+            robotController.Movement(MovementCommands.TurnRight);
+        }
+
+        private async Task Stop()
+        {
+            robotController.Movement(MovementCommands.Stop);
         }
     }
 }
