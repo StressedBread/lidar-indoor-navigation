@@ -224,10 +224,12 @@ namespace LidarIndoorNavigation.ViewModels
                 {
                     robotController.OpenSerialPort1(SelectedPort2);
                     robotController.OpenSerialPort2(SelectedPort3);
+                    arePortsOpen = true;
                 }
                 else
                 {
                     robotController.ClosePorts();
+                    arePortsOpen = false;
                 }
             }
         }

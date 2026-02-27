@@ -36,36 +36,12 @@ namespace LidarIndoorNavigation.Helpers
         //Nastavenie seriovej linky pre Napájanie//
         //***************************************//
 
-        public void OpenSerialPort2(string portName)
-        {
-            if (portName != null || portName != string.Empty)
-            {
-                selectedSerialPort2 = new SerialPort(portName);
-                selectedSerialPort2.BaudRate = 9600;
-                selectedSerialPort2.DataBits = 8;
-                selectedSerialPort2.Parity = Parity.None;
-                selectedSerialPort2.StopBits = StopBits.One;
-                try
-                {
-                    selectedSerialPort2.Open();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Error opening serial port 2: " + ex.Message);
-                }
-            }
-        }
-
-        //************************************//
-        //Nastavenie seriovej linky pre Motory//
-        //************************************//
-
         public void OpenSerialPort1(string portName)
         {
             if (portName != null || portName != string.Empty)
             {
                 selectedSerialPort1 = new SerialPort(portName);
-                selectedSerialPort1.BaudRate = 115200;
+                selectedSerialPort1.BaudRate = 9600;
                 selectedSerialPort1.DataBits = 8;
                 selectedSerialPort1.Parity = Parity.None;
                 selectedSerialPort1.StopBits = StopBits.One;
@@ -80,6 +56,30 @@ namespace LidarIndoorNavigation.Helpers
             }
         }
 
+        //************************************//
+        //Nastavenie seriovej linky pre Motory//
+        //************************************//
+
+        public void OpenSerialPort2(string portName)
+        {
+            if (portName != null || portName != string.Empty)
+            {
+                selectedSerialPort2 = new SerialPort(portName);
+                selectedSerialPort2.BaudRate = 115200;
+                selectedSerialPort2.DataBits = 8;
+                selectedSerialPort2.Parity = Parity.None;
+                selectedSerialPort2.StopBits = StopBits.One;
+                try
+                {
+                    selectedSerialPort2.Open();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error opening serial port 2: " + ex.Message);
+                }
+            }
+        }
+
         //**********************************************//    //*************//
         //Tlačídlo MOSFET pre zapnutie MOSFET1 a MOSFET2//    //Serial Port 2//
         //**********************************************//    //*************//
@@ -90,14 +90,14 @@ namespace LidarIndoorNavigation.Helpers
             {
                 if (Electronic == false)
                 {
-                    selectedSerialPort2.Write("|F11\r");  //MOSFET1 ON
-                    selectedSerialPort2.Write("|F21\r");  //MOSFET2 ON
+                    selectedSerialPort1.Write("|F11\r");  //MOSFET1 ON
+                    selectedSerialPort1.Write("|F21\r");  //MOSFET2 ON
                     Electronic = true;
                 }
                 else
                 {
-                    selectedSerialPort2.Write("|F10\r");  //MOSFET1 OFF
-                    selectedSerialPort2.Write("|F20\r");  //MOSFET2 OFF
+                    selectedSerialPort1.Write("|F10\r");  //MOSFET1 OFF
+                    selectedSerialPort1.Write("|F20\r");  //MOSFET2 OFF
                     Electronic = false;
                 }
             }
@@ -118,14 +118,14 @@ namespace LidarIndoorNavigation.Helpers
                 if (Electronic == true && Engine == true)
                 {
 
-                    selectedSerialPort1.Write("|MM0\r");  //MOTOR OFF
+                    selectedSerialPort2.Write("|MM0\r");  //MOTOR OFF
                     Engine = false;
 
                 }
 
                 else if (Electronic == true && Engine == false)
                 {
-                    selectedSerialPort1.Write("|MM1\r");  //MOTOR ON
+                    selectedSerialPort2.Write("|MM1\r");  //MOTOR ON
                     Engine = true;
                 }
             }
@@ -141,7 +141,7 @@ namespace LidarIndoorNavigation.Helpers
             System.Diagnostics.Debug.WriteLine(command);
 
 
-            if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen)
+            if (selectedSerialPort2 != null && selectedSerialPort2.IsOpen)
             {
                 try
                 {
@@ -149,10 +149,10 @@ namespace LidarIndoorNavigation.Helpers
                     {
 
                         string controlCommand = ("A" + "F" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
-                        selectedSerialPort1.Write(controlCommand);
+                        selectedSerialPort2.Write(controlCommand);
 
                         string controlCommand2 = ("C" + "F" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
-                        selectedSerialPort1.Write(controlCommand2);
+                        selectedSerialPort2.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
                         System.Diagnostics.Debug.WriteLine(controlCommand2);
@@ -173,10 +173,10 @@ namespace LidarIndoorNavigation.Helpers
                     {
 
                         string controlCommand = ("A" + "B" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
-                        selectedSerialPort1.Write(controlCommand);
+                        selectedSerialPort2.Write(controlCommand);
 
                         string controlCommand2 = ("C" + "B" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
-                        selectedSerialPort1.Write(controlCommand2);
+                        selectedSerialPort2.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
                         System.Diagnostics.Debug.WriteLine(controlCommand2);
@@ -186,10 +186,10 @@ namespace LidarIndoorNavigation.Helpers
                     {
 
                         string controlCommand = ("A" + "F" + completSequenceForOut + "B" + completSequenceForOut + SECUREMARK);
-                        selectedSerialPort1.Write(controlCommand);
+                        selectedSerialPort2.Write(controlCommand);
 
                         string controlCommand2 = ("C" + "F" + completSequenceForOut + "B" + completSequenceForOut + SECUREMARK);
-                        selectedSerialPort1.Write(controlCommand2);
+                        selectedSerialPort2.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
                         System.Diagnostics.Debug.WriteLine(controlCommand2);
@@ -199,10 +199,10 @@ namespace LidarIndoorNavigation.Helpers
                     {
 
                         string controlCommand = ("A" + "F" + "0" + "F" + "0" + SECUREMARK);
-                        selectedSerialPort1.Write(controlCommand);
+                        selectedSerialPort2.Write(controlCommand);
 
                         string controlCommand2 = ("C" + "F" + "0" + "F" + "0" + SECUREMARK);
-                        selectedSerialPort1.Write(controlCommand2);
+                        selectedSerialPort2.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
                         System.Diagnostics.Debug.WriteLine(controlCommand2);
