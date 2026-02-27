@@ -93,12 +93,14 @@ namespace LidarIndoorNavigation.Helpers
                     selectedSerialPort1.Write("|F11\r");  //MOSFET1 ON
                     selectedSerialPort1.Write("|F21\r");  //MOSFET2 ON
                     Electronic = true;
+                    System.Diagnostics.Debug.WriteLine("Electronic ON");
                 }
                 else
                 {
                     selectedSerialPort1.Write("|F10\r");  //MOSFET1 OFF
                     selectedSerialPort1.Write("|F20\r");  //MOSFET2 OFF
                     Electronic = false;
+                    System.Diagnostics.Debug.WriteLine("Electronic OFF");
                 }
             }
             else
@@ -120,13 +122,14 @@ namespace LidarIndoorNavigation.Helpers
 
                     selectedSerialPort2.Write("|MM0\r");  //MOTOR OFF
                     Engine = false;
-
+                    System.Diagnostics.Debug.WriteLine("Engine OFF");
                 }
 
                 else if (Electronic == true && Engine == false)
                 {
                     selectedSerialPort2.Write("|MM1\r");  //MOTOR ON
                     Engine = true;
+                    System.Diagnostics.Debug.WriteLine("Engine ON");
                 }
             }
         }
