@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36915.13 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SCIP_Library", "SCIP_Library\SCIP_Library.csproj", "{720EE5FA-536F-4356-A208-49898B4C3E8B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{720EE5FA-536F-4356-A208-49898B4C3E8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{720EE5FA-536F-4356-A208-49898B4C3E8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{720EE5FA-536F-4356-A208-49898B4C3E8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{720EE5FA-536F-4356-A208-49898B4C3E8B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7A56C82E-7FC5-49AA-AED8-20D055AF5B46}
+	EndGlobalSection
+EndGlobal

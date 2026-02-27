@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\SCIP_Library\SCIP_Library\SCIP_Library.csproj" />
+    <ProjectReference Include="..\SCIP_Library\SCIP_Library\SCIP_Library.csproj" />
   </ItemGroup>
 
 </Project>
