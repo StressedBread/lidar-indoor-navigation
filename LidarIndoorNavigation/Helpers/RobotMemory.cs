@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SkiaSharp;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace LidarIndoorNavigation.Helpers
         float occupiedUpdate = 0.2f;
         float decayRate = 0.98f;
         int gridCenter = 100;
+        int gridHeight = 200;
+        int gridWidth = 200;
 
         TestDataGenerator testDataGenerator = new TestDataGenerator();
 
@@ -36,65 +39,29 @@ namespace LidarIndoorNavigation.Helpers
         {
             testDataGenerator.GenerateTestData();
 
+            for (int x = 0; x < gridWidth; x++)
+            {
+                for (int y = 0; y < gridHeight; y++)
+                {
+                    grid[x, y] = grid[x, y] * decayRate + 0.5f * (1 - decayRate);
+                }
+            }
+
             for (int i = 0; i < DistancePointsStaticList.CartesianDistances.Count; i++)
             {
                 (int gridX, int gridY) endCell = GetGridCoordinates(i);
                 var raycast = BresenhamLine(gridCenter, gridCenter, endCell.gridX, endCell.gridY);
 
-                grid[endCell.gridX, endCell.gridY] = Math.Min(1.0f, grid[endCell.gridX, endCell.gridY] + occupiedUpdate);
                 foreach (var (x, y) in raycast)
                 {
                     if ((x, y) != (endCell.gridX, endCell.gridY))
                     {
                         grid[x, y] = Math.Max(0.0f, grid[x, y] - freeUpdate);
-                        grid[x, y] = grid[x,y] * decayRate + 0.5f*(1-decayRate);
                     }
                 }
 
-                grid[endCell.gridX, endCell.gridY] = grid[endCell.gridX, endCell.gridY] * decayRate + 0.5f * (1 - decayRate);
+                grid[endCell.gridX, endCell.gridY] = Math.Min(1.0f, grid[endCell.gridX, endCell.gridY] + occupiedUpdate);
             }
-
-            int width = 160;
-            int height = 160;
-            WriteableBitmap bitmap = new WriteableBitmap(
-                width, height, 96, 96, PixelFormats.Bgra32, null);
-
-            // Assume your grid is float[,] grid, 0 = free, 1 = occupied
-            bitmap.Lock();
-
-            unsafe
-            {
-                IntPtr pBackBuffer = bitmap.BackBuffer;
-                int stride = bitmap.BackBufferStride;
-
-                for (int y = 0; y < height; y++)
-                {
-                    for (int x = 0; x < width; x++)
-                    {
-                        byte val = (byte)(grid[x, y] * 255); // 0..255
-                                                             // BGRA32: Blue, Green, Red, Alpha
-                        int color_data = val << 16 | val << 8 | val | (255 << 24);
-
-                        *((int*)(pBackBuffer + y * stride + x * 4)) = color_data;
-                    }
-                }
-            }
-
-            bitmap.AddDirtyRect(new Int32Rect(0, 0, width, height));
-            bitmap.Unlock();
-
-
-            string filePath = "grid_debug.png";
-
-            PngBitmapEncoder encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(bitmap));
-
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                encoder.Save(stream);
-            }
-
-            System.Diagnostics.Debug.WriteLine($"Saved grid image to {filePath}");
         }
 
         private (int GridX, int GridY) GetGridCoordinates(int index)
@@ -140,6 +107,6 @@ namespace LidarIndoorNavigation.Helpers
             }
 
             return cells;
-        }
+        }       
     }
 }

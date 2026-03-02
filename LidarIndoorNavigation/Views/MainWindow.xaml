@@ -74,7 +74,7 @@
                 <ComboBox Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort3}"/>
             </StackPanel>
         </Grid>
-
+        
         <lvc:CartesianChart Grid.Row="4" 
                             Series="{Binding Series}"
                             EasingFunction="{x:Null}"

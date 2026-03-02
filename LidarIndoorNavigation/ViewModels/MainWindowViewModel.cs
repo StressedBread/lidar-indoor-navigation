@@ -1,15 +1,17 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LidarIndoorNavigation.Helpers;
+using LidarIndoorNavigation.Models;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using SCIP_Library;
+using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Ports;
-using LidarIndoorNavigation.Helpers;
 using System.Windows;
-using LidarIndoorNavigation.Models;
+using System.Windows.Media.Imaging;
 
 namespace LidarIndoorNavigation.ViewModels
 {
