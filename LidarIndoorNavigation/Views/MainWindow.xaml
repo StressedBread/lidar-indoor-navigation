@@ -24,6 +24,7 @@
             <Button Content="Electronic" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ElectronicCommand}"/>
             <Button Content="Engine" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding EngineCommand}"/>
             <Button Content="CheckPorts" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding CheckPortsCommand}"/>
+            <Button Content="TestDataMemory" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding TestDataMemoryCommand}"/>
         </StackPanel>
 
         <TextBlock Grid.Row="1" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="5" Text="{Binding RobotCommandString}"/>

@@ -29,6 +29,7 @@ namespace LidarIndoorNavigation.ViewModels
         PolarToCartesianConverter cartesianConverter = new();
         ReactiveNavigation reactiveNavigation = new();
         RobotController robotController = new();
+        RobotMemory robotMemory = new RobotMemory();
 
         private CancellationTokenSource cts = new();
 
@@ -58,6 +59,8 @@ namespace LidarIndoorNavigation.ViewModels
         public IAsyncRelayCommand? RightCommand { get; }
         public IAsyncRelayCommand? StopRobotCommand { get; }
 
+        public IRelayCommand? TestDataMemoryCommand { get; }
+
         public MainWindowViewModel()
         {
             StartCommand = new AsyncRelayCommand(StartScan);
@@ -70,6 +73,7 @@ namespace LidarIndoorNavigation.ViewModels
             LeftCommand = new AsyncRelayCommand(Left);
             RightCommand = new AsyncRelayCommand(Right);
             StopRobotCommand = new AsyncRelayCommand(Stop);
+            TestDataMemoryCommand = new RelayCommand(TestDataMemory);
 
             LoadSerialPorts();
 
@@ -164,12 +168,15 @@ namespace LidarIndoorNavigation.ViewModels
 
                         cartesianDistances = cartesianConverter.ConvertToCartesian(DistancePointsStaticList.Distances);
 
+                        DistancePointsStaticList.CartesianClear();
+                        DistancePointsStaticList.CartesianDistances.AddRange(cartesianDistances);
+
                         try
                         {
                             App.Current.Dispatcher.Invoke(() =>
                             {
                                 chartPoints.Clear();
-                                foreach (var (x, y) in cartesianDistances)
+                                foreach (var (x, y) in DistancePointsStaticList.CartesianDistances)
                                 {
                                     chartPoints.Add(new ObservablePoint(x, y));
                                 }
@@ -267,6 +274,11 @@ namespace LidarIndoorNavigation.ViewModels
         private async Task Stop()
         {
             robotController.Movement(MovementCommands.Stop);
+        }
+
+        private void TestDataMemory()
+        {
+            robotMemory.UpdateMemory();
         }
     }
 }
