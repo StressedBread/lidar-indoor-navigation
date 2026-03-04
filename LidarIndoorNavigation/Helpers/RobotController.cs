@@ -120,14 +120,14 @@ namespace LidarIndoorNavigation.Helpers
                 if (Electronic == true && Engine == true)
                 {
 
-                    selectedSerialPort2.Write("|MM0\r");  //MOTOR OFF
+                    selectedSerialPort1.Write("|MM0\r");  //MOTOR OFF
                     Engine = false;
                     System.Diagnostics.Debug.WriteLine("Engine OFF");
                 }
 
                 else if (Electronic == true && Engine == false)
                 {
-                    selectedSerialPort2.Write("|MM1\r");  //MOTOR ON
+                    selectedSerialPort1.Write("|MM1\r");  //MOTOR ON
                     Engine = true;
                     System.Diagnostics.Debug.WriteLine("Engine ON");
                 }
