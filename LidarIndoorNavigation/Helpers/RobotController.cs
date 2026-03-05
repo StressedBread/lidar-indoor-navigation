@@ -15,22 +15,12 @@ namespace LidarIndoorNavigation.Helpers
 {
     public class RobotController
     {
-        //private Stream stream;
-        //private Guid uuid = new Guid("8ce255c0-200a-11e0-ac64-0800200c9a66");
-        //private Thread receiveThread;
-        //private bool receiving;
         private SerialPort? selectedSerialPort1; //Seriová linka pre Motory
         private SerialPort? selectedSerialPort2; //Seriová linka pre Napájanie
         string SECUREMARK = "*";
         string completSequenceForOut = "5000";
         bool Electronic = false;
         bool Engine = false;
-
-        public RobotController()
-        {
-            //StartListening();
-            //labelReceivedData.TextChanged += LabelReceivedData_TextChanged;
-        }
 
         //***************************************//
         //Nastavenie seriovej linky pre Napájanie//
@@ -217,169 +207,6 @@ namespace LidarIndoorNavigation.Helpers
                 }
             }
         }
-
-        //******************//
-        //Zapnutie počúvania//
-        //******************//
-
-        /*private void StartListening()
-        {
-            try
-            {
-                bluetoothListener = new BluetoothListener(uuid);
-                bluetoothListener.Start();
-                bluetoothListener.BeginAcceptBluetoothClient(AcceptCallback, null);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Chyba pri počúvaní: " + ex.Message);
-
-            }
-        }*/
-
-        //********//
-        //Callback//
-        //********//
-
-        /*private void AcceptCallback(IAsyncResult result)
-        {
-            try
-            {
-                BluetoothClient client = bluetoothListener.EndAcceptBluetoothClient(result);
-                stream = client.GetStream();
-                tbInfo.Invoke(new Action(() =>
-                {
-                    tbInfo.AppendText("Zariadenie je prepojené." + Environment.NewLine);
-                }));
-                StartReceiving();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Chyba pri akceptovaní klienta: " + ex.Message);
-                WaitForConnection();
-            }
-        }*/
-
-        //*******************//
-        //Zapnutie príjamania//
-        //*******************//
-
-        /*private void StartReceiving()
-        {
-            receiving = true;
-            receiveThread = new Thread(ReceiveData);
-            receiveThread.Start();
-        }*/
-
-        //*************************//
-        //Prímanie Stringu do Label//
-        //*************************//
-
-        /*private void ReceiveData()
-        {
-            while (receiving)
-            {
-                try
-                {
-                    byte[] buffer = new byte[1024];
-                    int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                    if (bytesRead == 0)
-                    {
-                        tbInfo.Invoke(new Action(() =>
-                        {
-                            tbInfo.AppendText("Pripojenie bolo prerušené." + Environment.NewLine);
-                        }));
-
-                        WaitForConnection();
-                        break;
-                    }
-                    string receivedData = System.Text.Encoding.ASCII.GetString(buffer, 0, bytesRead);
-
-                    if (labelReceivedData.InvokeRequired)
-                    {
-                        if (!labelReceivedData.IsDisposed && labelReceivedData.IsHandleCreated)
-                        {
-                            labelReceivedData.Invoke(new Action(() =>
-                            {
-                                labelReceivedData.Text = receivedData;
-                            }));
-                        }
-                    }
-                    else
-                    {
-                        if (!labelReceivedData.IsDisposed)
-                        {
-                            labelReceivedData.Text = receivedData;
-                        }
-                    }
-                }
-                catch (IOException)
-                {
-
-                }
-
-
-            }
-
-        }*/
-
-        //*******************************//
-        //Čakanie na obnovenie pripojenia//
-        //*******************************//
-
-        /*private void WaitForConnection()
-        {
-
-            try
-            {
-                bluetoothListener.BeginAcceptBluetoothClient(AcceptCallback, null);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Chyba pri čakaní na pripojenie: " + ex.Message);
-            }
-        }*/
-
-        //*********//
-        //Odpojenie//
-        //*********//
-
-        /*private void Disconnect()
-        {
-            try
-            {
-                receiving = false;
-                if (stream != null)
-                {
-                    stream.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Chyba pri odpojovaní: " + ex.Message);
-            }
-        }*/
-
-        //*******************//
-        //Panel a.k.a pozadie//
-        //*******************//
-
-        //private void panel1_Paint(object sender, PaintEventArgs e)
-        //{
-            /*panel1.BackgroundImage = Properties.Resources.spu_logo;
-            panel1.BackgroundImageLayout = ImageLayout.Stretch;*/
-            //panel1.BackColor = Color.White;
-            //Graphics g = e.Graphics;
-            //Graphics h = e.Graphics;
-            //Pen blkpen = new Pen(Color.Black, 5);
-            //g.DrawRectangle(blkpen, new Rectangle(1, 1, 695, 365));
-            /*h.DrawRectangle(blkpen, new Rectangle(40,40,100,100));*/
-
-        //}
-
-        //***********************************//
-        //Tlačídlo Exit pre vypnutie programu//
-        //***********************************//
 
         internal void ClosePorts()
         {

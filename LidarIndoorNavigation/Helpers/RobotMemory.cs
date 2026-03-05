@@ -13,100 +13,93 @@ namespace LidarIndoorNavigation.Helpers
 {
     public class RobotMemory
     {
-        int gridResolution = 50;
-        float[,] grid = new float[200, 200];
-        float freeUpdate = 0.1f;
-        float occupiedUpdate = 0.2f;
-        float decayRate = 0.98f;
-        int gridCenter = 100;
-        int gridHeight = 200;
-        int gridWidth = 200;
+        private int gridResolution = 50;
+        private float freeUpdate = 0.1f;
+        private float occupiedUpdate = 0.2f;
+        private float decayRate = 0.98f;
+        private int gridCenter = 100;
 
-        TestDataGenerator testDataGenerator = new TestDataGenerator();
+        public float[,] Grid { get; } = new float[200, 200];
 
-        public RobotMemory()
+        private readonly object _lock = new();
+        private List<(double x, double y)> _pendingPoints = new();
+        private bool _dirty = false;
+
+        public void EnqueueScan(List<(double x, double y)> points)
         {
-            for (int i = 0; i < grid.GetLength(0); i++)
+            lock (_lock)
             {
-                for (int j = 0; j < grid.GetLength(1); j++)
-                {
-                    grid[i, j] = 0.5f;
-                }
+                _pendingPoints = points.ToList();
+                _dirty = true;
             }
         }
 
-        public void UpdateMemory()
+        public void StartBackgroundProcessing(CancellationToken token)
         {
-            testDataGenerator.GenerateTestData();
-
-            for (int x = 0; x < gridWidth; x++)
+            Task.Run(() =>
             {
-                for (int y = 0; y < gridHeight; y++)
+                while (!token.IsCancellationRequested)
                 {
-                    grid[x, y] = grid[x, y] * decayRate + 0.5f * (1 - decayRate);
-                }
-            }
+                    List<(double x, double y)>? points = null;
 
-            for (int i = 0; i < DistancePointsStaticList.CartesianDistances.Count; i++)
-            {
-                (int gridX, int gridY) endCell = GetGridCoordinates(i);
-                var raycast = BresenhamLine(gridCenter, gridCenter, endCell.gridX, endCell.gridY);
-
-                foreach (var (x, y) in raycast)
-                {
-                    if ((x, y) != (endCell.gridX, endCell.gridY))
+                    lock (_lock)
                     {
-                        grid[x, y] = Math.Max(0.0f, grid[x, y] - freeUpdate);
+                        if (_dirty)
+                        {
+                            points = _pendingPoints;
+                            _dirty = false;
+                        }
                     }
-                }
 
-                grid[endCell.gridX, endCell.gridY] = Math.Min(1.0f, grid[endCell.gridX, endCell.gridY] + occupiedUpdate);
-            }
+                    if (points != null)
+                        ProcessScan(points);
+                    else
+                        Thread.Sleep(10);
+                }
+            }, token);
         }
 
-        private (int GridX, int GridY) GetGridCoordinates(int index)
+        private void ProcessScan(List<(double x, double y)> points)
         {
-            int gridX = (int)Math.Floor(gridCenter + DistancePointsStaticList.CartesianDistances[index].x / gridResolution);
-            int gridY = (int)Math.Floor(gridCenter + DistancePointsStaticList.CartesianDistances[index].y / gridResolution);
+            // decay
+            for (int x = 0; x < 200; x++)
+                for (int y = 0; y < 200; y++)
+                    Grid[x, y] *= decayRate;
 
-            return (gridX, gridY);
+            foreach (var (cx, cy) in points)
+            {
+                // skip blind spot
+                double angle = Math.Atan2(cx, cy) * 180.0 / Math.PI;
+                if (Math.Abs(angle) > 120.0) continue;
+
+                int gx = Math.Clamp((int)Math.Floor(gridCenter + cx / gridResolution), 0, 199);
+                int gy = Math.Clamp((int)Math.Floor(gridCenter - cy / gridResolution), 0, 199);
+
+                foreach (var (x, y) in BresenhamLine(gridCenter, gridCenter, gx, gy))
+                {
+                    if (x == gx && y == gy)
+                        Grid[x, y] = Math.Min(1.0f, Grid[x, y] + occupiedUpdate);
+                    else
+                        Grid[x, y] = Math.Max(0.0f, Grid[x, y] - freeUpdate);
+                }
+            }
         }
 
         public static List<(int x, int y)> BresenhamLine(int x0, int y0, int x1, int y1)
         {
             var cells = new List<(int x, int y)>();
-
-            int dx = Math.Abs(x1 - x0);
-            int dy = Math.Abs(y1 - y0);
-
-            int sx = (x0 < x1) ? 1 : -1;
-            int sy = (y0 < y1) ? 1 : -1;
-
+            int dx = Math.Abs(x1 - x0), dy = Math.Abs(y1 - y0);
+            int sx = x0 < x1 ? 1 : -1, sy = y0 < y1 ? 1 : -1;
             int err = dx - dy;
-
             while (true)
             {
                 cells.Add((x0, y0));
-
-                if (x0 == x1 && y0 == y1)
-                    break;
-
+                if (x0 == x1 && y0 == y1) break;
                 int e2 = 2 * err;
-
-                if (e2 > -dy)
-                {
-                    err -= dy;
-                    x0 += sx;
-                }
-
-                if (e2 < dx)
-                {
-                    err += dx;
-                    y0 += sy;
-                }
+                if (e2 > -dy) { err -= dy; x0 += sx; }
+                if (e2 < dx) { err += dx; y0 += sy; }
             }
-
             return cells;
-        }       
+        }
     }
 }

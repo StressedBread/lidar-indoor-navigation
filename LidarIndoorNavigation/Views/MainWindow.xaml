@@ -23,7 +23,6 @@
             <Button Content="Open/Close Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding OpenPortsCommand}"/>
             <Button Content="Electronic" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ElectronicCommand}"/>
             <Button Content="Engine" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding EngineCommand}"/>
-            <Button Content="CheckPorts" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding CheckPortsCommand}"/>
             <Button Content="TestDataMemory" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding TestDataMemoryCommand}"/>
         </StackPanel>
 
@@ -74,7 +73,7 @@
                 <ComboBox Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort3}"/>
             </StackPanel>
         </Grid>
-        
+
         <lvc:CartesianChart Grid.Row="4" 
                             Series="{Binding Series}"
                             EasingFunction="{x:Null}"

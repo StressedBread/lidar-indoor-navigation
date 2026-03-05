@@ -54,12 +54,10 @@ namespace LidarIndoorNavigation.ViewModels
         public IRelayCommand? OpenPortsCommand { get; }
         public IRelayCommand? ElectronicCommand { get; }
         public IRelayCommand? EngineCommand { get; }
-        public IAsyncRelayCommand? CheckPortsCommand { get; }
-
-        public IAsyncRelayCommand? ForwardCommand { get; }
-        public IAsyncRelayCommand? LeftCommand { get; }
-        public IAsyncRelayCommand? RightCommand { get; }
-        public IAsyncRelayCommand? StopRobotCommand { get; }
+        public IRelayCommand? ForwardCommand { get; }
+        public IRelayCommand? LeftCommand { get; }
+        public IRelayCommand? RightCommand { get; }
+        public IRelayCommand? StopRobotCommand { get; }
 
         public IRelayCommand? TestDataMemoryCommand { get; }
 
@@ -70,11 +68,10 @@ namespace LidarIndoorNavigation.ViewModels
             OpenPortsCommand = new RelayCommand(OpenPorts);
             ElectronicCommand = new RelayCommand(Electronic);
             EngineCommand = new RelayCommand(Engine);
-            CheckPortsCommand = new AsyncRelayCommand(CheckPorts);
-            ForwardCommand = new AsyncRelayCommand(Forward);
-            LeftCommand = new AsyncRelayCommand(Left);
-            RightCommand = new AsyncRelayCommand(Right);
-            StopRobotCommand = new AsyncRelayCommand(Stop);
+            ForwardCommand = new RelayCommand(Forward);
+            LeftCommand = new RelayCommand(Left);
+            RightCommand = new RelayCommand(Right);
+            StopRobotCommand = new RelayCommand(Stop);
             TestDataMemoryCommand = new RelayCommand(TestDataMemory);
 
             LoadSerialPorts();
@@ -111,6 +108,7 @@ namespace LidarIndoorNavigation.ViewModels
         {
             cts = new CancellationTokenSource();
             var token = cts.Token;
+            robotMemory.StartBackgroundProcessing(cts.Token);
 
             try
             {
@@ -194,6 +192,8 @@ namespace LidarIndoorNavigation.ViewModels
                         var decision = reactiveNavigation.DecisionLogicLessSectors(minDistances);
 
                         robotController.Movement(decision);
+
+                        robotMemory.EnqueueScan(DistancePointsStaticList.CartesianDistances.ToList());
                     }
                     robotController.Movement(MovementCommands.Stop);
                     urg.Close();
@@ -253,34 +253,30 @@ namespace LidarIndoorNavigation.ViewModels
             robotController.EngineButton();
         }
 
-        private async Task CheckPorts()
-        {
 
-        }
-
-        private async Task Forward()
+        private void Forward()
         {
             robotController.Movement(MovementCommands.Forward);
         }
 
-        private async Task Left()
+        private void Left()
         {
             robotController.Movement(MovementCommands.TurnLeft);
         }
 
-        private async Task Right()
+        private void Right()
         {
             robotController.Movement(MovementCommands.TurnRight);
         }
 
-        private async Task Stop()
+        private void Stop()
         {
             robotController.Movement(MovementCommands.Stop);
         }
 
         private void TestDataMemory()
         {
-            robotMemory.UpdateMemory();
+            //robotMemory.UpdateMemory();
         }
     }
 }
