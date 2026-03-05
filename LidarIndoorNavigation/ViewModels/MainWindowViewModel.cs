@@ -30,7 +30,6 @@ namespace LidarIndoorNavigation.ViewModels
 
         PolarToCartesianConverter cartesianConverter = new();
         ReactiveNavigation reactiveNavigation = new();
-        RobotController robotController = new();
         RobotMemory robotMemory = new RobotMemory();
 
         private CancellationTokenSource cts = new();
@@ -187,15 +186,17 @@ namespace LidarIndoorNavigation.ViewModels
                             MessageBox.Show($"Error updating chart: {ex.Message}");
                         }
 
-                        (int R, int Mid, int L) minDistances = reactiveNavigation.CalculateMinDistanceLessSectors();
+                        /*(int R, int Mid, int L) minDistances = reactiveNavigation.CalculateMinDistanceLessSectors();
                         System.Diagnostics.Debug.WriteLine(minDistances);
-                        var decision = reactiveNavigation.DecisionLogicLessSectors(minDistances);
+                        var decision = reactiveNavigation.DecisionLogicLessSectors(minDistances);*/
 
-                        robotController.Movement(decision);
+                        //RobotController.Movement(decision);
+
+                        reactiveNavigation.DecideMovement();
 
                         robotMemory.EnqueueScan(DistancePointsStaticList.CartesianDistances.ToList());
                     }
-                    robotController.Movement(MovementCommands.Stop);
+                    RobotController.Movement(MovementCommands.Stop);
                     urg.Close();
                 }, token);
 
@@ -231,13 +232,13 @@ namespace LidarIndoorNavigation.ViewModels
             {
                 if (!arePortsOpen)
                 {
-                    robotController.OpenSerialPort1(SelectedPort2);
-                    robotController.OpenSerialPort2(SelectedPort3);
+                    RobotController.OpenSerialPort1(SelectedPort2);
+                    RobotController.OpenSerialPort2(SelectedPort3);
                     arePortsOpen = true;
                 }
                 else
                 {
-                    robotController.ClosePorts();
+                    RobotController.ClosePorts();
                     arePortsOpen = false;
                 }
             }
@@ -245,33 +246,33 @@ namespace LidarIndoorNavigation.ViewModels
 
         private void Electronic()
         {
-            robotController.ElectronicButton();
+            RobotController.ElectronicButton();
         }
 
         private void Engine()
         {
-            robotController.EngineButton();
+            RobotController.EngineButton();
         }
 
 
         private void Forward()
         {
-            robotController.Movement(MovementCommands.Forward);
+            RobotController.Movement(MovementCommands.Forward);
         }
 
         private void Left()
         {
-            robotController.Movement(MovementCommands.TurnLeft);
+            RobotController.Movement(MovementCommands.TurnLeft);
         }
 
         private void Right()
         {
-            robotController.Movement(MovementCommands.TurnRight);
+            RobotController.Movement(MovementCommands.TurnRight);
         }
 
         private void Stop()
         {
-            robotController.Movement(MovementCommands.Stop);
+            RobotController.Movement(MovementCommands.Stop);
         }
 
         private void TestDataMemory()

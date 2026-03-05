@@ -13,20 +13,22 @@ using System.Windows.Media;
 
 namespace LidarIndoorNavigation.Helpers
 {
-    public class RobotController
+    public static class RobotController
     {
-        private SerialPort? selectedSerialPort1; //Seriová linka pre Motory
-        private SerialPort? selectedSerialPort2; //Seriová linka pre Napájanie
-        string SECUREMARK = "*";
-        string completSequenceForOut = "5000";
-        bool Electronic = false;
-        bool Engine = false;
+        //Odber = 1.2A, pri zmene smeru 1.8A
+
+        private static SerialPort? selectedSerialPort1; //Seriová linka pre Motory
+        private static SerialPort? selectedSerialPort2; //Seriová linka pre Napájanie
+        private static string SECUREMARK = "*";
+        private static string completSequenceForOut = "5000";
+        private static bool Electronic = false;
+        private static bool Engine = false;
 
         //***************************************//
         //Nastavenie seriovej linky pre Napájanie//
         //***************************************//
 
-        public void OpenSerialPort1(string portName)
+        public static void OpenSerialPort1(string portName)
         {
             if (portName != null || portName != string.Empty)
             {
@@ -38,6 +40,7 @@ namespace LidarIndoorNavigation.Helpers
                 try
                 {
                     selectedSerialPort1.Open();
+                    MessageBox.Show("Port 1 open");
                 }
                 catch (Exception ex)
                 {
@@ -50,7 +53,7 @@ namespace LidarIndoorNavigation.Helpers
         //Nastavenie seriovej linky pre Motory//
         //************************************//
 
-        public void OpenSerialPort2(string portName)
+        public static void OpenSerialPort2(string portName)
         {
             if (portName != null || portName != string.Empty)
             {
@@ -62,6 +65,7 @@ namespace LidarIndoorNavigation.Helpers
                 try
                 {
                     selectedSerialPort2.Open();
+                    MessageBox.Show("Port 2 open");
                 }
                 catch (Exception ex)
                 {
@@ -74,7 +78,7 @@ namespace LidarIndoorNavigation.Helpers
         //Tlačídlo MOSFET pre zapnutie MOSFET1 a MOSFET2//    //Serial Port 2//
         //**********************************************//    //*************//
 
-        public void ElectronicButton()
+        public static void ElectronicButton()
         {
             if (selectedSerialPort1 != null && selectedSerialPort2 != null && selectedSerialPort1.IsOpen && selectedSerialPort2.IsOpen)
             {
@@ -102,7 +106,7 @@ namespace LidarIndoorNavigation.Helpers
         //Tlačídlo Motory pre zapnutie  motorov//    //Serial Port 2//
         //************************************//    //*************//
 
-        public void EngineButton()
+        public static void EngineButton()
         {
             if (selectedSerialPort1 != null && selectedSerialPort2 != null && selectedSerialPort1.IsOpen && selectedSerialPort2.IsOpen)
             {
@@ -129,7 +133,7 @@ namespace LidarIndoorNavigation.Helpers
         //Posielanie Stringu do seriovej linky// 
         //************************************//
 
-        internal void Movement(MovementCommands command)
+        internal static void Movement(MovementCommands command)
         {
             System.Diagnostics.Debug.WriteLine(command);
 
@@ -191,10 +195,10 @@ namespace LidarIndoorNavigation.Helpers
                     if (command == MovementCommands.Stop)   /*STOP*/
                     {
 
-                        string controlCommand = ("A" + "F" + "0" + "F" + "0" + SECUREMARK);
+                        string controlCommand = ("A" + "F" + "0000" + "F" + "0000" + SECUREMARK);
                         selectedSerialPort2.Write(controlCommand);
 
-                        string controlCommand2 = ("C" + "F" + "0" + "F" + "0" + SECUREMARK);
+                        string controlCommand2 = ("C" + "F" + "0000" + "F" + "0000" + SECUREMARK);
                         selectedSerialPort2.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
@@ -208,7 +212,7 @@ namespace LidarIndoorNavigation.Helpers
             }
         }
 
-        internal void ClosePorts()
+        internal static void ClosePorts()
         {
             if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen && selectedSerialPort2 != null && selectedSerialPort2.IsOpen)
             {
@@ -216,6 +220,24 @@ namespace LidarIndoorNavigation.Helpers
                 selectedSerialPort2.Close();
 
                 MessageBox.Show("Robot serial ports were closed successfully.");
+            }
+        }
+
+        public static void Shutdown()
+        {
+            if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen)
+            {
+                selectedSerialPort1.Write("|MM0\r");  //MOTOR OFF
+                selectedSerialPort1.Write("|F10\r");  //MOSFET1 OFF
+                selectedSerialPort1.Write("|F20\r");  //MOSFET2 OFF
+
+                Thread.Sleep(100); 
+                selectedSerialPort1.Close();
+            }
+
+            if (selectedSerialPort2 != null && selectedSerialPort2.IsOpen)
+            {
+                selectedSerialPort2.Close();
             }
         }
     }

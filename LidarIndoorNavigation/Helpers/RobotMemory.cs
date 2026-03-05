@@ -17,9 +17,9 @@ namespace LidarIndoorNavigation.Helpers
         private float freeUpdate = 0.1f;
         private float occupiedUpdate = 0.2f;
         private float decayRate = 0.98f;
-        private int gridCenter = 100;
+        public static int gridCenter = 100;
 
-        public float[,] Grid { get; } = new float[200, 200];
+        public static float[,] Grid { get; } = new float[200, 200];
 
         private readonly object _lock = new();
         private List<(double x, double y)> _pendingPoints = new();
@@ -61,14 +61,12 @@ namespace LidarIndoorNavigation.Helpers
 
         private void ProcessScan(List<(double x, double y)> points)
         {
-            // decay
             for (int x = 0; x < 200; x++)
                 for (int y = 0; y < 200; y++)
                     Grid[x, y] *= decayRate;
 
             foreach (var (cx, cy) in points)
             {
-                // skip blind spot
                 double angle = Math.Atan2(cx, cy) * 180.0 / Math.PI;
                 if (Math.Abs(angle) > 120.0) continue;
 

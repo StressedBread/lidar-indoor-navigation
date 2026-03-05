@@ -24,64 +24,25 @@ namespace LidarIndoorNavigation.Helpers
         int safeDistanceSide = 400;
         int safeDistanceMiddle = 600;
 
+        int bestSector = 0;
+
+        private float[] risks;
+        private float moveAngle = 0;
+
+        private int currentHeading = 0;
+        private int nextHeading = 0;
+
+        RiskCalculation riskCalculation = new();
+
         internal ReactiveNavigation()
         {
-            sideSectorSizeSteps = (end_step - start_step) / sectors;
+            /*sideSectorSizeSteps = (end_step - start_step) / sectors;
             middleSectorSizeSteps = sideSectorSizeSteps + 2;
 
-            lessSectorsSizeSteps = (end_step - start_step) / lessSectors;
+            lessSectorsSizeSteps = (end_step - start_step) / lessSectors;*/
         }
 
-        public (int RB, int RF, int Mid, int LF, int LB) CalculateMinDistance()
-        {
-            int currentSectorRB = 99999;
-            int currentSectorRF = 99999;
-            int currentSectorMid = 99999;
-            int currentSectorLF = 99999;
-            int currentSectorLB = 99999;
-
-            for (int i = 0; i < DistancePointsStaticList.Distances.Count; i++)
-            {
-                if (DistancePointsStaticList.Distances[i] <= 20 || DistancePointsStaticList.Distances[i] > 4600)
-                {
-                    continue;
-                }
-
-                else if (i >= 0 && i <= sideSectorSizeSteps)
-                {
-                    if (currentSectorRB > (int)DistancePointsStaticList.Distances[i])
-                        currentSectorRB = (int)DistancePointsStaticList.Distances[i];
-                }
-
-                else if (i >= sideSectorSizeSteps && i <= 2 * sideSectorSizeSteps)
-                {
-                    if (currentSectorRF > (int)DistancePointsStaticList.Distances[i])
-                        currentSectorRF = (int)DistancePointsStaticList.Distances[i];
-                }
-
-                else if (i >= 2 * sideSectorSizeSteps && i <= 2 * sideSectorSizeSteps + middleSectorSizeSteps)
-                {
-                    if (currentSectorMid > (int)DistancePointsStaticList.Distances[i])
-                        currentSectorMid = (int)DistancePointsStaticList.Distances[i];
-                }
-
-                else if (i >= DistancePointsStaticList.Distances.Count - (2 * sideSectorSizeSteps) && i <= DistancePointsStaticList.Distances.Count - sideSectorSizeSteps)
-                {
-                    if (currentSectorLF > (int)DistancePointsStaticList.Distances[i])
-                        currentSectorLF = (int)DistancePointsStaticList.Distances[i];
-                }
-
-                else if (i >= DistancePointsStaticList.Distances.Count - sideSectorSizeSteps && i <= DistancePointsStaticList.Distances.Count)
-                {
-                    if (currentSectorLB > (int)DistancePointsStaticList.Distances[i])
-                        currentSectorLB = (int)DistancePointsStaticList.Distances[i];
-                }
-            }
-
-            return (currentSectorRB, currentSectorRF, currentSectorMid, currentSectorLF, currentSectorLB);
-        }
-
-        public (int R, int Mid, int L) CalculateMinDistanceLessSectors()
+        /*public (int R, int Mid, int L) CalculateMinDistanceLessSectors()
         {
             int currentSectorR = 99999;
             int currentSectorMid = 99999;
@@ -116,11 +77,6 @@ namespace LidarIndoorNavigation.Helpers
             return (currentSectorR, currentSectorMid, currentSectorL);
         }
 
-        public void DecisionLogic(int RB, int RF, int Mid, int LF, int LB)
-        {
-
-        }
-
         public MovementCommands DecisionLogicLessSectors((int R, int Mid, int L) sectors)
         {
             if (sectors.Mid < safeDistanceMiddle)
@@ -142,6 +98,14 @@ namespace LidarIndoorNavigation.Helpers
             {
                 return MovementCommands.Forward;
             }            
+        }*/
+
+        public void DecideMovement()
+        {
+            risks = riskCalculation.EvaluateSectors();
+            bestSector = Array.IndexOf(risks, risks.Min());
+
+            moveAngle = -120 + bestSector * (240 / risks.Length) + (240 / risks.Length) / 2;
         }
     }
 }
