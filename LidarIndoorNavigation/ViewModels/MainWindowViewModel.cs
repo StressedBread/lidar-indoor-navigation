@@ -21,6 +21,7 @@ namespace LidarIndoorNavigation.ViewModels
         int baudrate = 115200;
 
         bool arePortsOpen = false;
+        List<string> ports = new();
 
         const int start_step = 44;
         int end_step = 725;
@@ -59,6 +60,7 @@ namespace LidarIndoorNavigation.ViewModels
         public IRelayCommand? StopRobotCommand { get; }
 
         public IRelayCommand? TestDataMemoryCommand { get; }
+        public IRelayCommand? RefreshPortsCommand { get; }
 
         public MainWindowViewModel()
         {
@@ -72,6 +74,7 @@ namespace LidarIndoorNavigation.ViewModels
             RightCommand = new RelayCommand(Right);
             StopRobotCommand = new RelayCommand(Stop);
             TestDataMemoryCommand = new RelayCommand(TestDataMemory);
+            RefreshPortsCommand = new RelayCommand(RefreshPorts);
 
             LoadSerialPorts();
 
@@ -219,7 +222,7 @@ namespace LidarIndoorNavigation.ViewModels
 
         private void LoadSerialPorts()
         {
-            string[] ports = SerialPort.GetPortNames();
+            ports = SerialPort.GetPortNames().ToList();
             foreach (string port in ports)
             {
                 ComPorts.Add(port);
@@ -278,6 +281,17 @@ namespace LidarIndoorNavigation.ViewModels
         private void TestDataMemory()
         {
             //robotMemory.UpdateMemory();
+        }
+
+        private void RefreshPorts()
+        {
+            ports.Clear();
+            ComPorts.Clear();
+            ports = SerialPort.GetPortNames().ToList();
+            foreach (string port in ports)
+            {
+                ComPorts.Add(port);
+            }
         }
     }
 }

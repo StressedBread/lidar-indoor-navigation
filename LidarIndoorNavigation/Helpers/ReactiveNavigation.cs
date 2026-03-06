@@ -27,7 +27,7 @@ namespace LidarIndoorNavigation.Helpers
         int bestSector = 0;
 
         private float[] risks;
-        private float moveAngle = 0;
+        private double moveAngle = 0;
 
         private int currentHeading = 0;
         private int nextHeading = 0;
@@ -106,6 +106,8 @@ namespace LidarIndoorNavigation.Helpers
             bestSector = Array.IndexOf(risks, risks.Min());
 
             moveAngle = -120 + bestSector * (240 / risks.Length) + (240 / risks.Length) / 2;
+
+
         }
     }
 }
