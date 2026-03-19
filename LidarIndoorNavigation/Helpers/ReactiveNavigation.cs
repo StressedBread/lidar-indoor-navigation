@@ -4,35 +4,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace LidarIndoorNavigation.Helpers
 {
     internal class ReactiveNavigation
     {
-        const int start_step = 44;
-        const int end_step = 725;
-        const double stepAngle = 0.3515625;
-
-        int sectors = 5;
-        int lessSectors = 3;
-
-        int sideSectorSizeSteps = 0;
-        int middleSectorSizeSteps = 0;
-
-        int lessSectorsSizeSteps = 0;
-
-        int safeDistanceSide = 400;
-        int safeDistanceMiddle = 600;
-
-        int bestSector = 0;
-
-        private float[] risks;
-        private double moveAngle = 0;
-
-        private int currentHeading = 0;
-        private int nextHeading = 0;
+        const int sectors = 10;
+        const double span = 240;
+        const double sectorWidth = span / sectors;
+        const double frontRiskThreshold = 0.4;
+        const double deadZone = 15;
+        const int hold = 3;
 
         RiskCalculation riskCalculation = new();
+        private double[] risks = new double[sectors];
+        public double moveAngle = 0;
+        private double forwardScale = 1;
+        private bool isBlocked = false;
+
+        private MovementCommands lastCommad = MovementCommands.Stop;
+        private int holdCounter = 0;
 
         internal ReactiveNavigation()
         {
@@ -103,11 +95,64 @@ namespace LidarIndoorNavigation.Helpers
         public void DecideMovement()
         {
             risks = riskCalculation.EvaluateSectors();
-            bestSector = Array.IndexOf(risks, risks.Min());
 
-            moveAngle = -120 + bestSector * (240 / risks.Length) + (240 / risks.Length) / 2;
+            double totalX = 0, totalY = 0;
 
+            for (int i = 0; i < sectors; i++)
+            {
+                double angle = (-120 + i * sectorWidth + sectorWidth / 2) * Math.PI / 180;
+                double weight = Math.Max(0, 1 - risks[i]);
+                totalX += Math.Sin(angle) * weight;
+                totalY += Math.Cos(angle) * weight;
+            }
 
+            double magnitude = Math.Sqrt(totalX * totalX + totalY * totalY);
+            moveAngle = Math.Atan2(totalX, totalY) * 180 / Math.PI;
+            isBlocked = magnitude < 0.3;
+
+            int mid = sectors / 2;
+            double frontRisk = (risks[mid - 1] + risks[mid] + risks[mid + 1]) / 3;
+            forwardScale = Math.Max(0, 1 - frontRisk / 1.5);
+
+            if (!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
+            {
+                double leftRisk = risks.Skip(mid + 1).Sum();
+                double rightRisk = risks.Take(mid).Sum();
+                moveAngle = leftRisk < rightRisk ? 30 : -30;
+            }
         }
-    }
+
+        public (MovementCommands command, double forwardScale) GetCommand()
+        {
+            MovementCommands raw;
+
+            if (isBlocked)
+                raw = MovementCommands.Stop;
+            else if (moveAngle > deadZone)
+                raw = MovementCommands.TurnLeft;
+            else if (moveAngle < -deadZone)
+                raw = MovementCommands.TurnRight;
+            else
+                raw = MovementCommands.Forward;
+
+            return (Stabilize(raw), forwardScale);
+        }
+
+        private MovementCommands Stabilize(MovementCommands newCommand)
+        {
+            if (newCommand == lastCommad)
+            {
+                holdCounter = 0;
+                return lastCommad;
+            }
+            holdCounter++;
+
+            if (holdCounter >= hold)
+            {
+                lastCommad = newCommand;
+                holdCounter = 0;
+            }
+
+            return lastCommad;
+        }
 }

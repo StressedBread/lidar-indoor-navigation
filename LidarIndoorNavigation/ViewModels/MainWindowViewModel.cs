@@ -197,7 +197,13 @@ namespace LidarIndoorNavigation.ViewModels
 
                         reactiveNavigation.DecideMovement();
 
-                        robotMemory.EnqueueScan(DistancePointsStaticList.CartesianDistances.ToList());
+                        //robotMemory.EnqueueScan(DistancePointsStaticList.CartesianDistances.ToList());
+
+                        var (command, forwardScale) = reactiveNavigation.GetCommand();
+
+                        var (leftSpeed, rightSpeed) = RobotController.AngleToWheelSpeeds(reactiveNavigation.moveAngle, forwardScale, command == MovementCommands.Stop);
+
+                        RobotController.SetMovement(leftSpeed, rightSpeed);
                     }
                     RobotController.Movement(MovementCommands.Stop);
                     urg.Close();

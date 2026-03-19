@@ -14,9 +14,9 @@ namespace LidarIndoorNavigation.Helpers
         float startAngle = 0;
         double rad = 0;
 
-        public float[] EvaluateSectors()
+        public double[] EvaluateSectors()
         {
-            float[] risks = new float[sectors];
+            double[] risks = new double[sectors];
             sectorAngle = 240f / sectors;
 
             for (int i = 0; i < sectors; i++)
@@ -28,26 +28,28 @@ namespace LidarIndoorNavigation.Helpers
             return risks;
         }
 
-        public float EvaluateDirection(float angle, float distanceCells)
+        public double EvaluateDirection(float angle, float distanceCells)
         {
             rad = angle * Math.PI / 180;
 
-            int dx = (int)Math.Floor(Math.Cos(rad));
-            int dy = (int)Math.Floor(Math.Sin(rad));
+            double dx = Math.Cos(rad);
+            double dy = Math.Sin(rad);
 
-            int x = RobotMemory.gridCenter;
-            int y = RobotMemory.gridCenter;
+            double x = RobotMemory.gridCenter;
+            double y = RobotMemory.gridCenter;
 
-            float risk = 0;
+            double risk = 0;
 
             for (int i = 0; i < distanceCells; i++)
             {
                 x += dx;
-                x += dy;
+                y += dy;
+
+                int gx = (int)x, gy = (int)y;
 
                 if (x < 0 || x >= 200 || y < 0 || y >= 200) break;
 
-                risk += RobotMemory.Grid[x, y];
+                risk += RobotMemory.Grid[gx, gy];
             }
 
             return risk;

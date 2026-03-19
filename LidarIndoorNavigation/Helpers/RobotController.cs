@@ -20,9 +20,14 @@ namespace LidarIndoorNavigation.Helpers
         private static SerialPort? selectedSerialPort1; //Seriová linka pre Motory
         private static SerialPort? selectedSerialPort2; //Seriová linka pre Napájanie
         private static string SECUREMARK = "*";
-        private static string completSequenceForOut = "5000";
+        private static string maxSpeedString = "5000";
+        private static int maxSpeed = 5000;
         private static bool Electronic = false;
         private static bool Engine = false;
+
+        private static double currentLeft = 0;
+        private static double currentRight = 0;
+        private static double rampRate = 0.15;
 
         //***************************************//
         //Nastavenie seriovej linky pre Napájanie//
@@ -145,10 +150,10 @@ namespace LidarIndoorNavigation.Helpers
                     if (command == MovementCommands.Forward)   /*FORWARD*/
                     {
 
-                        string controlCommand = ("A" + "F" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
+                        string controlCommand = ("A" + "F" + maxSpeedString + "F" + maxSpeedString + SECUREMARK);
                         selectedSerialPort2.Write(controlCommand);
 
-                        string controlCommand2 = ("C" + "F" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
+                        string controlCommand2 = ("C" + "F" + maxSpeedString + "F" + maxSpeedString + SECUREMARK);
                         selectedSerialPort2.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
@@ -169,10 +174,10 @@ namespace LidarIndoorNavigation.Helpers
                     if (command == MovementCommands.TurnLeft)   /*LEFT*/
                     {
 
-                        string controlCommand = ("A" + "B" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
+                        string controlCommand = ("A" + "B" + maxSpeedString + "F" + maxSpeedString + SECUREMARK);
                         selectedSerialPort2.Write(controlCommand);
 
-                        string controlCommand2 = ("C" + "B" + completSequenceForOut + "F" + completSequenceForOut + SECUREMARK);
+                        string controlCommand2 = ("C" + "B" + maxSpeedString + "F" + maxSpeedString + SECUREMARK);
                         selectedSerialPort2.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
@@ -182,10 +187,10 @@ namespace LidarIndoorNavigation.Helpers
                     if (command == MovementCommands.TurnRight)   /*RIGHT*/
                     {
 
-                        string controlCommand = ("A" + "F" + completSequenceForOut + "B" + completSequenceForOut + SECUREMARK);
+                        string controlCommand = ("A" + "F" + maxSpeedString + "B" + maxSpeedString + SECUREMARK);
                         selectedSerialPort2.Write(controlCommand);
 
-                        string controlCommand2 = ("C" + "F" + completSequenceForOut + "B" + completSequenceForOut + SECUREMARK);
+                        string controlCommand2 = ("C" + "F" + maxSpeedString + "B" + maxSpeedString + SECUREMARK);
                         selectedSerialPort2.Write(controlCommand2);
 
                         System.Diagnostics.Debug.WriteLine(controlCommand);
@@ -212,6 +217,55 @@ namespace LidarIndoorNavigation.Helpers
             }
         }
 
+        internal static void SetMovement(double leftTarget, double rightTarget)
+        {
+            currentLeft = Lerp(currentLeft, leftTarget, rampRate);
+            currentRight = Lerp(currentRight, rightTarget, rampRate);
+            SendWheels(currentLeft, currentRight);
+        }
+
+        internal static void SendWheels(double left, double right)
+        {
+            if (selectedSerialPort2 != null && selectedSerialPort2.IsOpen)
+            {
+                selectedSerialPort2.Write(BuildCommand("A", left));))
+                selectedSerialPort2.Write(BuildCommand("C", right));
+            }
+        }
+
+        internal static (double left, double right) AngleToWheelSpeeds(double moveAngle, double forwardScale, bool isBlocked)
+        {
+            if (isBlocked) return (0, 0);
+
+            double turn = Math.Clamp(moveAngle / 120.0, -1, 1);
+            double forward = forwardScale;
+            double left = forward + turn;
+            double right = forward - turn;
+
+            double maxVal = Math.Max(Math.Abs(left), Math.Abs(right));
+            if (maxVal > 1)
+            {
+                left /= maxVal;
+                right /= maxVal;
+            }
+
+            return (left, right);
+        }
+
+        internal static string BuildCommand(string side, double speed)
+        {
+            string direction = speed >= 0 ? "F" : "B";
+            int speedValue = (int)Math.Abs(Math.Clamp(speed * maxSpeed, -maxSpeed, maxSpeed));
+            string sequence = direction + speedValue.ToString();
+            return $"{side}{sequence}{sequence}{SECUREMARK}";
+        }
+
+        private static double Lerp(double a, double b, double t) => a + (b - a) * t;
+
+        //***************//
+        //Close the ports// 
+        //***************//
+
         internal static void ClosePorts()
         {
             if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen && selectedSerialPort2 != null && selectedSerialPort2.IsOpen)
@@ -223,6 +277,10 @@ namespace LidarIndoorNavigation.Helpers
             }
         }
 
+        //************************************//
+        //Turns off everything on app shutdown// 
+        //************************************//
+
         public static void Shutdown()
         {
             if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen)
@@ -231,7 +289,7 @@ namespace LidarIndoorNavigation.Helpers
                 selectedSerialPort1.Write("|F10\r");  //MOSFET1 OFF
                 selectedSerialPort1.Write("|F20\r");  //MOSFET2 OFF
 
-                Thread.Sleep(100); 
+                Thread.Sleep(100);
                 selectedSerialPort1.Close();
             }
 
