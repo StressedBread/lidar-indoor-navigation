@@ -155,4 +155,5 @@ namespace LidarIndoorNavigation.Helpers
 
             return lastCommad;
         }
+    }
 }
