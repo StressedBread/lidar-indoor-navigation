@@ -110,7 +110,7 @@ namespace LidarIndoorNavigation.ViewModels
         {
             cts = new CancellationTokenSource();
             var token = cts.Token;
-            robotMemory.StartBackgroundProcessing(cts.Token);
+            //robotMemory.StartBackgroundProcessing(cts.Token);
 
             try
             {

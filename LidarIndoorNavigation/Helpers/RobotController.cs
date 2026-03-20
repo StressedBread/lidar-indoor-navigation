@@ -219,8 +219,17 @@ namespace LidarIndoorNavigation.Helpers
 
         internal static void SetMovement(double leftTarget, double rightTarget)
         {
-            currentLeft = Lerp(currentLeft, leftTarget, rampRate);
-            currentRight = Lerp(currentRight, rightTarget, rampRate);
+            if (leftTarget == 0 && rightTarget == 0)
+            {
+                currentLeft = 0;
+                currentRight = 0;
+            }
+            else
+            {
+                currentLeft = Lerp(currentLeft, leftTarget, rampRate);
+                currentRight = Lerp(currentRight, rightTarget, rampRate);
+            }
+
             SendWheels(currentLeft, currentRight);
         }
 

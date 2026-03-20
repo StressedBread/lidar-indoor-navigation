@@ -126,9 +126,7 @@ namespace LidarIndoorNavigation.Helpers
         {
             MovementCommands raw;
 
-            if (isBlocked)
-                raw = MovementCommands.Stop;
-            else if (moveAngle > deadZone)
+            if (moveAngle > deadZone)
                 raw = MovementCommands.TurnLeft;
             else if (moveAngle < -deadZone)
                 raw = MovementCommands.TurnRight;
@@ -140,6 +138,13 @@ namespace LidarIndoorNavigation.Helpers
 
         private MovementCommands Stabilize(MovementCommands newCommand)
         {
+            if (isBlocked)
+            {
+                holdCounter = 0;
+                lastCommad = MovementCommands.Stop;
+                return lastCommad;
+            }
+
             if (newCommand == lastCommad)
             {
                 holdCounter = 0;
