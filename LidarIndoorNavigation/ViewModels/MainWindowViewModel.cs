@@ -17,6 +17,8 @@ namespace LidarIndoorNavigation.ViewModels
 {
     internal partial class MainWindowViewModel : ObservableObject
     {
+        WaypointNavigator waypointNavigator = new();
+
         public static SerialPort? urg;
         int baudrate = 115200;
 
@@ -108,6 +110,8 @@ namespace LidarIndoorNavigation.ViewModels
 
         private async Task StartScan()
         {
+            waypointNavigator.SetGoal(1000, 2500);
+
             cts = new CancellationTokenSource();
             var token = cts.Token;
             //robotMemory.StartBackgroundProcessing(cts.Token);
@@ -195,7 +199,7 @@ namespace LidarIndoorNavigation.ViewModels
 
                         //RobotController.Movement(decision);
 
-                        reactiveNavigation.DecideMovement();
+                        reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances);
 
                         //robotMemory.EnqueueScan(DistancePointsStaticList.CartesianDistances.ToList());
 

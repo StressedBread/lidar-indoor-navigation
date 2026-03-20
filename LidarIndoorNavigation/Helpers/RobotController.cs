@@ -237,7 +237,7 @@ namespace LidarIndoorNavigation.Helpers
         {
             if (selectedSerialPort2 != null && selectedSerialPort2.IsOpen)
             {
-                selectedSerialPort2.Write(BuildCommand("A", left));))
+                selectedSerialPort2.Write(BuildCommand("A", left));
                 selectedSerialPort2.Write(BuildCommand("C", right));
             }
         }
