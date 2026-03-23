@@ -27,7 +27,7 @@ namespace LidarIndoorNavigation.Helpers
 
         private static double currentLeft = 0;
         private static double currentRight = 0;
-        private static double rampRate = 0.15;
+        private static double rampRate = 0.5;
 
         //***************************************//
         //Nastavenie seriovej linky pre Napájanie//
@@ -237,8 +237,13 @@ namespace LidarIndoorNavigation.Helpers
         {
             if (selectedSerialPort2 != null && selectedSerialPort2.IsOpen)
             {
-                selectedSerialPort2.Write(BuildCommand("A", left));
-                selectedSerialPort2.Write(BuildCommand("C", right));
+                selectedSerialPort2.Write(BuildCommand("A", left, right));
+                selectedSerialPort2.Write(BuildCommand("C", left, right));
+            }
+            else
+            {
+                BuildCommand("A", left, right);
+                BuildCommand("C", left, right);
             }
         }
 
@@ -261,12 +266,19 @@ namespace LidarIndoorNavigation.Helpers
             return (left, right);
         }
 
-        internal static string BuildCommand(string side, double speed)
+        internal static string BuildCommand(string axle, double leftSpeed, double rightSpeed)
         {
-            string direction = speed >= 0 ? "F" : "B";
-            int speedValue = (int)Math.Abs(Math.Clamp(speed * maxSpeed, -maxSpeed, maxSpeed));
-            string sequence = direction + speedValue.ToString();
-            return $"{side}{sequence}{sequence}{SECUREMARK}";
+            int leftSpeedValue = (int)Math.Abs(Math.Clamp(leftSpeed * maxSpeed, -maxSpeed, maxSpeed));
+            int rightSpeedValue = (int)Math.Abs(Math.Clamp(rightSpeed * maxSpeed, -maxSpeed, maxSpeed));
+
+            string leftDirection = leftSpeed >= 0 ? "F" : "B";
+            string rightDirection = rightSpeed >= 0 ? "F" : "B";
+
+            string leftSequence = leftDirection + leftSpeedValue;
+            string rightSequence = rightDirection + rightSpeedValue;
+
+            System.Diagnostics.Debug.WriteLine($"{axle}{leftSequence}{rightSequence}{SECUREMARK}");
+            return $"{axle}{leftSequence}{rightSequence}{SECUREMARK}";
         }
 
         private static double Lerp(double a, double b, double t) => a + (b - a) * t;

@@ -110,11 +110,11 @@ namespace LidarIndoorNavigation.ViewModels
 
         private async Task StartScan()
         {
-            waypointNavigator.SetGoal(1000, 2500);
+            //waypointNavigator.SetGoal(1000, 2500);
 
             cts = new CancellationTokenSource();
             var token = cts.Token;
-            //robotMemory.StartBackgroundProcessing(cts.Token);
+            robotMemory.StartBackgroundProcessing(cts.Token);
 
             try
             {
@@ -199,13 +199,17 @@ namespace LidarIndoorNavigation.ViewModels
 
                         //RobotController.Movement(decision);
 
-                        reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances);
+                        robotMemory.EnqueueScan(DistancePointsStaticList.CartesianDistances.ToList());
 
-                        //robotMemory.EnqueueScan(DistancePointsStaticList.CartesianDistances.ToList());
+                        double moveAngle = reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances);
 
-                        var (command, forwardScale) = reactiveNavigation.GetCommand();
+                        var (command, forwardScale) = reactiveNavigation.GetCommand(moveAngle);
 
                         var (leftSpeed, rightSpeed) = RobotController.AngleToWheelSpeeds(reactiveNavigation.moveAngle, forwardScale, command == MovementCommands.Stop);
+
+                        System.Diagnostics.Debug.WriteLine(moveAngle);
+                        System.Diagnostics.Debug.WriteLine(command + " || " + forwardScale);
+                        System.Diagnostics.Debug.WriteLine(leftSpeed + " || " + rightSpeed);
 
                         RobotController.SetMovement(leftSpeed, rightSpeed);
                     }

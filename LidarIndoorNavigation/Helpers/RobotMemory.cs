@@ -14,12 +14,12 @@ namespace LidarIndoorNavigation.Helpers
     public class RobotMemory
     {
         private int gridResolution = 50;
-        private float freeUpdate = 0.1f;
-        private float occupiedUpdate = 0.2f;
-        private float decayRate = 0.98f;
+        private double freeUpdate = 0.1f;
+        private double occupiedUpdate = 0.2f;
+        private double decayRate = 0.98f;
         public static int gridCenter = 100;
 
-        public static float[,] Grid { get; } = new float[200, 200];
+        public static double[,] Grid { get; } = new double[200, 200];
 
         private readonly object _lock = new();
         private List<(double x, double y)> _pendingPoints = new();

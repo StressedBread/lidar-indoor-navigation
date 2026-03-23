@@ -9,7 +9,7 @@ namespace LidarIndoorNavigation.Helpers
     internal class RiskCalculation
     {
         int sectors = 10;
-        int distanceCells = 10;
+        int distanceCells = 30;
         float sectorAngle = 0;
         float startAngle = 0;
         double rad = 0;
@@ -33,7 +33,7 @@ namespace LidarIndoorNavigation.Helpers
             rad = angle * Math.PI / 180;
 
             double dx = Math.Cos(rad);
-            double dy = Math.Sin(rad);
+            double dy = -Math.Sin(rad);
 
             double x = RobotMemory.gridCenter;
             double y = RobotMemory.gridCenter;

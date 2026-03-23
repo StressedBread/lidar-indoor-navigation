@@ -95,14 +95,14 @@ namespace LidarIndoorNavigation.Helpers
             }            
         }*/
 
-        public void DecideMovement(List<(double x, double y)> cleanScan)
+        public double DecideMovement(List<(double x, double y)> cleanScan)
         {
-            icp.Update(cleanScan);
+            /*icp.Update(cleanScan);
 
             if (waypointNavigator.goalReached)
             {
                 icp.Reset();
-            }
+            }*/
 
             risks = riskCalculation.EvaluateSectors();
 
@@ -131,23 +131,25 @@ namespace LidarIndoorNavigation.Helpers
                 moveAngle = leftRisk < rightRisk ? 30 : -30;
             }
 
-            double? goalAngle = waypointNavigator.GetSteeringAgle(icp.positionX, icp.positionY, icp.heading, forwardScale);
+            /*double? goalAngle = waypointNavigator.GetSteeringAgle(icp.positionX, icp.positionY, icp.heading, forwardScale);
 
             if (goalAngle.HasValue)
             {
                 double goalWeight = forwardScale;
                 double avoidanceWeight = 1 - forwardScale;
                 moveAngle = goalAngle.Value * goalWeight + moveAngle * avoidanceWeight;
-            }
+            }*/
+
+            return moveAngle;
         }
 
-        public (MovementCommands command, double forwardScale) GetCommand()
+        public (MovementCommands command, double forwardScale) GetCommand(double finalMoveAngle)
         {
             MovementCommands raw;
 
-            if (moveAngle > deadZone)
+            if (finalMoveAngle > deadZone)
                 raw = MovementCommands.TurnLeft;
-            else if (moveAngle < -deadZone)
+            else if (finalMoveAngle < -deadZone)
                 raw = MovementCommands.TurnRight;
             else
                 raw = MovementCommands.Forward;
