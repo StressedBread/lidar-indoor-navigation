@@ -37,7 +37,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Row="0">
-                <RepeatButton Content="Up" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ForwardCommand}"/>    
+                <RepeatButton Content="Forward" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ForwardCommand}"/>    
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.Row="1">
@@ -46,6 +46,7 @@
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.Row="2">
+                <RepeatButton Content="Back" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding BackwardCommand}"/>
                 <RepeatButton Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StopRobotCommand}"/>
             </StackPanel>
 

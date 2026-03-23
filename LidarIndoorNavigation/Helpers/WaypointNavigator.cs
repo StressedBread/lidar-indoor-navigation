@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace LidarIndoorNavigation.Helpers
 {
-    internal class WaypointNavigator
+    public static class WaypointNavigator
     {
-        private double arrivalRadius = 20;
-        private double obstacleHandoff = 0.5;
+        private static double arrivalRadius = 20;
+        private static double obstacleHandoff = 0.5;
 
-        private double goalX = 0;
-        private double goalY = 0;
-        private bool goalSet = false;
+        private static double goalX = 0;
+        private static double goalY = 0;
+        private static bool goalSet = false;
 
-        public bool goalReached = false;
+        public static bool goalReached = false;
 
-        public void SetGoal(double x, double y)
+        public static void SetGoal(double x, double y)
         {
             goalX = x;
             goalY = y;
@@ -25,7 +25,7 @@ namespace LidarIndoorNavigation.Helpers
             goalReached = false;
         }
 
-        public double? GetSteeringAgle(double robotX, double robotY, double robotHeading, double forwardScale)
+        public static double? GetSteeringAgle(double robotX, double robotY, double robotHeading, double forwardScale)
         {
             if (!goalSet || goalReached) return null;
 
@@ -48,14 +48,14 @@ namespace LidarIndoorNavigation.Helpers
             return relativeAngle;
         }
 
-        public double GetDistanceToGoal(double robotX, double robotY)
+        public static double GetDistanceToGoal(double robotX, double robotY)
         {
             double deltaX = goalX - robotX;
             double deltaY = goalY - robotY;
             return Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
         }
 
-        public void Reset()
+        public static void Reset()
         {
             goalSet = false;
             goalReached = false;

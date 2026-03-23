@@ -11,6 +11,7 @@ namespace LidarIndoorNavigation.Models
         Stop,
         Forward,
         TurnLeft,
-        TurnRight
+        TurnRight,
+        Backward
     }
 }

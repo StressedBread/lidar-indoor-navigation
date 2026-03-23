@@ -15,10 +15,9 @@ namespace LidarIndoorNavigation.Helpers
         const double sectorWidth = span / sectors;
         const double frontRiskThreshold = 0.4;
         const double deadZone = 15;
-        const int hold = 3;
+        const int hold = 1;
 
         ICP icp = new();
-        WaypointNavigator waypointNavigator = new();
 
         RiskCalculation riskCalculation = new();
         private double[] risks = new double[sectors];
@@ -97,12 +96,12 @@ namespace LidarIndoorNavigation.Helpers
 
         public double DecideMovement(List<(double x, double y)> cleanScan)
         {
-            /*icp.Update(cleanScan);
+            icp.Update(cleanScan);
 
-            if (waypointNavigator.goalReached)
+            if (WaypointNavigator.goalReached)
             {
                 icp.Reset();
-            }*/
+            }
 
             risks = riskCalculation.EvaluateSectors();
 
@@ -131,16 +130,17 @@ namespace LidarIndoorNavigation.Helpers
                 moveAngle = leftRisk < rightRisk ? 30 : -30;
             }
 
-            /*double? goalAngle = waypointNavigator.GetSteeringAgle(icp.positionX, icp.positionY, icp.heading, forwardScale);
+            double? goalAngle = WaypointNavigator.GetSteeringAgle(icp.positionX, icp.positionY, icp.heading, forwardScale);
 
             if (goalAngle.HasValue)
             {
                 double goalWeight = forwardScale;
                 double avoidanceWeight = 1 - forwardScale;
                 moveAngle = goalAngle.Value * goalWeight + moveAngle * avoidanceWeight;
-            }*/
+            }
 
-            return moveAngle;
+            if (goalAngle != null) return goalAngle.Value;
+            else return moveAngle;
         }
 
         public (MovementCommands command, double forwardScale) GetCommand(double finalMoveAngle)

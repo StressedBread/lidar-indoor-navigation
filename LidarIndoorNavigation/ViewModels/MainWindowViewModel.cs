@@ -17,8 +17,6 @@ namespace LidarIndoorNavigation.ViewModels
 {
     internal partial class MainWindowViewModel : ObservableObject
     {
-        WaypointNavigator waypointNavigator = new();
-
         public static SerialPort? urg;
         int baudrate = 115200;
 
@@ -59,6 +57,7 @@ namespace LidarIndoorNavigation.ViewModels
         public IRelayCommand? ForwardCommand { get; }
         public IRelayCommand? LeftCommand { get; }
         public IRelayCommand? RightCommand { get; }
+        public IRelayCommand? BackwardCommand { get; }
         public IRelayCommand? StopRobotCommand { get; }
 
         public IRelayCommand? TestDataMemoryCommand { get; }
@@ -74,11 +73,13 @@ namespace LidarIndoorNavigation.ViewModels
             ForwardCommand = new RelayCommand(Forward);
             LeftCommand = new RelayCommand(Left);
             RightCommand = new RelayCommand(Right);
+            BackwardCommand = new RelayCommand(Backward);
             StopRobotCommand = new RelayCommand(Stop);
             TestDataMemoryCommand = new RelayCommand(TestDataMemory);
             RefreshPortsCommand = new RelayCommand(RefreshPorts);
 
             LoadSerialPorts();
+            WaypointNavigator.SetGoal(-1000, 1500);
 
             Series =
             [
@@ -110,7 +111,6 @@ namespace LidarIndoorNavigation.ViewModels
 
         private async Task StartScan()
         {
-            //waypointNavigator.SetGoal(1000, 2500);
 
             cts = new CancellationTokenSource();
             var token = cts.Token;
@@ -205,13 +205,17 @@ namespace LidarIndoorNavigation.ViewModels
 
                         var (command, forwardScale) = reactiveNavigation.GetCommand(moveAngle);
 
-                        var (leftSpeed, rightSpeed) = RobotController.AngleToWheelSpeeds(reactiveNavigation.moveAngle, forwardScale, command == MovementCommands.Stop);
+                        RobotController.Movement(command);
 
+                        //var (leftSpeed, rightSpeed) = RobotController.AngleToWheelSpeeds(reactiveNavigation.moveAngle, forwardScale, command == MovementCommands.Stop);
+
+                        System.Diagnostics.Debug.WriteLine("\n********");
                         System.Diagnostics.Debug.WriteLine(moveAngle);
-                        System.Diagnostics.Debug.WriteLine(command + " || " + forwardScale);
-                        System.Diagnostics.Debug.WriteLine(leftSpeed + " || " + rightSpeed);
+                        System.Diagnostics.Debug.WriteLine(command);
+                        System.Diagnostics.Debug.WriteLine("********\n");
+                        //System.Diagnostics.Debug.WriteLine(leftSpeed + " || " + rightSpeed);
 
-                        RobotController.SetMovement(leftSpeed, rightSpeed);
+                        //RobotController.SetMovement(leftSpeed, rightSpeed);
                     }
                     RobotController.Movement(MovementCommands.Stop);
                     urg.Close();
@@ -285,6 +289,11 @@ namespace LidarIndoorNavigation.ViewModels
         private void Right()
         {
             RobotController.Movement(MovementCommands.TurnRight);
+        }
+
+        private void Backward()
+        {
+            RobotController.Movement(MovementCommands.Backward);
         }
 
         private void Stop()

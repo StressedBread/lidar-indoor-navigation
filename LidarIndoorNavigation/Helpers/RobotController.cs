@@ -20,8 +20,9 @@ namespace LidarIndoorNavigation.Helpers
         private static SerialPort? selectedSerialPort1; //Seriová linka pre Motory
         private static SerialPort? selectedSerialPort2; //Seriová linka pre Napájanie
         private static string SECUREMARK = "*";
-        private static string maxSpeedString = "5000";
+        private static string maxSpeedString = "3000";
         private static int maxSpeed = 5000;
+        private static int minSpeed = 2500;
         private static bool Electronic = false;
         private static bool Engine = false;
 
@@ -160,16 +161,19 @@ namespace LidarIndoorNavigation.Helpers
                         System.Diagnostics.Debug.WriteLine(controlCommand2);
                     }
 
-                    //if (labelReceivedData.Text == "Backwards")   /*BACKWARDS*/
-                    /*{
+                    if (command == MovementCommands.Backward)   /*BACKWARDS*/
+                    {
 
-                        string controlCommand = ("A" + "B" + completSequenceForOut + "B" + completSequenceForOut + SECUREMARK);
-                        selectedSerialPort1.Write(controlCommand);
+                        string controlCommand = ("A" + "B" + maxSpeedString + "B" + maxSpeedString + SECUREMARK);
+                        selectedSerialPort2.Write(controlCommand);
 
-                        string controlCommand2 = ("C" + "B" + completSequenceForOut + "B" + completSequenceForOut + SECUREMARK);
-                        selectedSerialPort1.Write(controlCommand2);
+                        string controlCommand2 = ("C" + "B" + maxSpeedString + "B" + maxSpeedString + SECUREMARK);
+                        selectedSerialPort2.Write(controlCommand2);
 
-                    }*/
+                        System.Diagnostics.Debug.WriteLine(controlCommand);
+                        System.Diagnostics.Debug.WriteLine(controlCommand2);
+
+                    }
 
                     if (command == MovementCommands.TurnLeft)   /*LEFT*/
                     {
@@ -270,6 +274,9 @@ namespace LidarIndoorNavigation.Helpers
         {
             int leftSpeedValue = (int)Math.Abs(Math.Clamp(leftSpeed * maxSpeed, -maxSpeed, maxSpeed));
             int rightSpeedValue = (int)Math.Abs(Math.Clamp(rightSpeed * maxSpeed, -maxSpeed, maxSpeed));
+
+            leftSpeedValue = Math.Clamp(leftSpeedValue, minSpeed, maxSpeed);
+            rightSpeedValue = Math.Clamp(rightSpeedValue, minSpeed, maxSpeed);
 
             string leftDirection = leftSpeed >= 0 ? "F" : "B";
             string rightDirection = rightSpeed >= 0 ? "F" : "B";
