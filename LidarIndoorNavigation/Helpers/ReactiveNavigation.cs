@@ -96,12 +96,12 @@ namespace LidarIndoorNavigation.Helpers
 
         public double DecideMovement(List<(double x, double y)> cleanScan)
         {
-            icp.Update(cleanScan);
+            /*icp.Update(cleanScan);
 
             if (WaypointNavigator.goalReached)
             {
                 icp.Reset();
-            }
+            }*/
 
             risks = riskCalculation.EvaluateSectors();
 
