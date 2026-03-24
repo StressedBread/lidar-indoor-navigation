@@ -19,7 +19,7 @@ namespace LidarIndoorNavigation.Helpers
         private double decayRate = 0.98f;
         public static int gridCenter = 100;
 
-        public static double[,] Grid { get; } = new double[200, 200];
+        public static double[,] Grid { get; } = new double[201, 201];
 
         private readonly object _lock = new();
         private List<(double x, double y)> _pendingPoints = new();
@@ -61,8 +61,8 @@ namespace LidarIndoorNavigation.Helpers
 
         private void ProcessScan(List<(double x, double y)> points)
         {
-            for (int x = 0; x < 200; x++)
-                for (int y = 0; y < 200; y++)
+            for (int x = 0; x < 201; x++)
+                for (int y = 0; y < 201; y++)
                     Grid[x, y] *= decayRate;
 
             foreach (var (cx, cy) in points)
@@ -70,8 +70,8 @@ namespace LidarIndoorNavigation.Helpers
                 double angle = Math.Atan2(cx, cy) * 180.0 / Math.PI;
                 if (Math.Abs(angle) > 120.0) continue;
 
-                int gx = Math.Clamp((int)Math.Floor(gridCenter + cx / gridResolution), 0, 199);
-                int gy = Math.Clamp((int)Math.Floor(gridCenter - cy / gridResolution), 0, 199);
+                int gx = Math.Clamp((int)Math.Floor(gridCenter + cx / gridResolution), 0, 200);
+                int gy = Math.Clamp((int)Math.Floor(gridCenter - cy / gridResolution), 0, 200);
 
                 foreach (var (x, y) in BresenhamLine(gridCenter, gridCenter, gx, gy))
                 {
