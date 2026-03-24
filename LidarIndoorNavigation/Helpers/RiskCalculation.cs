@@ -47,7 +47,7 @@ namespace LidarIndoorNavigation.Helpers
 
                 int gx = (int)x, gy = (int)y;
 
-                if (x < 0 || x >= 200 || y < 0 || y >= 200) break;
+                if (x < 0 || x >= 201 || y < 0 || y >= 201) break;
 
                 risk += RobotMemory.Grid[gx, gy];
             }
