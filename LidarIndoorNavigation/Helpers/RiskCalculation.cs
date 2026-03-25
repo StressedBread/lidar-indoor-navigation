@@ -28,7 +28,7 @@ namespace LidarIndoorNavigation.Helpers
             return risks;
         }
 
-        public double EvaluateDirection(float angle, float distanceCells)
+        /*public double EvaluateDirection(float angle, float distanceCells)
         {
             rad = angle * Math.PI / 180;
 
@@ -53,6 +53,36 @@ namespace LidarIndoorNavigation.Helpers
             }
 
             return risk;
+        }*/
+
+        public double EvaluateDirection(float angle, float distanceCells)
+        {
+            // cast N rays spread across the 12° sector width
+            int rayCount = 5;
+            double sectorHalfWidth = 6.0; // half of 12°
+            double totalRisk = 0;
+
+            for (int r = 0; r < rayCount; r++)
+            {
+                double offset = -sectorHalfWidth + r * (sectorHalfWidth * 2 / (rayCount - 1));
+                double rayAngle = angle + offset;
+                rad = rayAngle * Math.PI / 180;
+
+                double dx = Math.Cos(rad);
+                double dy = -Math.Sin(rad);
+                double x = RobotMemory.gridCenter;
+                double y = RobotMemory.gridCenter;
+
+                for (int i = 0; i < distanceCells; i++)
+                {
+                    x += dx; y += dy;
+                    int gx = (int)x, gy = (int)y;
+                    if (x < 0 || x >= 201 || y < 0 || y >= 201) break;
+                    totalRisk += RobotMemory.Grid[gx, gy];
+                }
+            }
+
+            return totalRisk; // or totalRisk / rayCount to normalize
         }
     }
 }
