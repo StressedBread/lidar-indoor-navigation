@@ -104,6 +104,8 @@ namespace LidarIndoorNavigation.Helpers
             }*/
 
             risks = riskCalculation.EvaluateSectors();
+            
+            System.Diagnostics.Debug.WriteLine(string.Join(", ", risks.Select(r => r.ToString("F2"))));
 
             double totalX = 0, totalY = 0;
 
@@ -118,7 +120,7 @@ namespace LidarIndoorNavigation.Helpers
             double magnitude = Math.Sqrt(totalX * totalX + totalY * totalY);
             moveAngle = Math.Atan2(totalX, totalY) * 180 / Math.PI;
             System.Diagnostics.Debug.WriteLine("Magnitude: " + magnitude);
-            isBlocked = magnitude > 8.5;
+            isBlocked = magnitude > 9;
 
             int mid = (sectors / 2) - 1;
             double frontRisk = (risks[mid + 1] + risks[mid]) / 2;
