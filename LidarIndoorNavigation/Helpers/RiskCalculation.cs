@@ -9,7 +9,7 @@ namespace LidarIndoorNavigation.Helpers
     internal class RiskCalculation
     {
         int sectors = 20;
-        int distanceCells = 100;
+        int distanceCells = 20;
         float sectorAngle = 0;
         float startAngle = 0;
         double rad = 0;
@@ -82,7 +82,7 @@ namespace LidarIndoorNavigation.Helpers
                 }
             }
 
-            return totalRisk / rayCount; 
+            return totalRisk; 
         }
     }
 }

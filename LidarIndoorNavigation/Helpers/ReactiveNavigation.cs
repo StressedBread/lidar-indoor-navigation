@@ -13,7 +13,7 @@ namespace LidarIndoorNavigation.Helpers
         const int sectors = 20;
         const double span = 240;
         const double sectorWidth = span / sectors;
-        const double frontRiskThreshold = 0.25;
+        const double frontRiskThreshold = 1;
         const double deadZone = 15;
         const int hold = 1;
 
@@ -120,7 +120,7 @@ namespace LidarIndoorNavigation.Helpers
             double magnitude = Math.Sqrt(totalX * totalX + totalY * totalY);
             moveAngle = Math.Atan2(totalX, totalY) * 180 / Math.PI;
             System.Diagnostics.Debug.WriteLine("Magnitude: " + magnitude);
-            isBlocked = magnitude > 9;
+            isBlocked = magnitude < 1;
 
             int mid = (sectors / 2) - 1;
             double frontRisk = (risks[mid + 1] + risks[mid]) / 2;
