@@ -32,8 +32,8 @@ namespace LidarIndoorNavigation.Helpers
         {
             rad = angle * Math.PI / 180;
 
-            double dx = Math.Cos(rad);
-            double dy = -Math.Sin(rad);
+            double dx = Math.Sin(rad);
+            double dy = -Math.Cos(rad);
 
             double x = RobotMemory.gridCenter;
             double y = RobotMemory.gridCenter;

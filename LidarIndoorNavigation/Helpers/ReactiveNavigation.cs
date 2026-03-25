@@ -14,7 +14,7 @@ namespace LidarIndoorNavigation.Helpers
         const double span = 240;
         const double sectorWidth = span / sectors;
         const double frontRiskThreshold = 0.25;
-        const double deadZone = 15;
+        const double deadZone = 24;
         const int hold = 1;
 
         ICP icp = new();
@@ -106,6 +106,8 @@ namespace LidarIndoorNavigation.Helpers
             risks = riskCalculation.EvaluateSectors();
 
             double totalX = 0, totalY = 0;
+
+            System.Diagnostics.Debug.WriteLine(string.Join(", ", risks.Select(r => r.ToString("F2"))));
 
             for (int i = 0; i < sectors; i++)
             {
