@@ -45,6 +45,9 @@ namespace LidarIndoorNavigation.ViewModels
         [ObservableProperty]
         private string? selectedPort3 = "";
 
+        [ObservableProperty]
+        private BitmapSource? gridImage;
+
         public ISeries[] Series { get; set; }
         public Axis[] XAxes { get; set; }
         public Axis[] YAxes { get; set; }
@@ -200,6 +203,11 @@ namespace LidarIndoorNavigation.ViewModels
                         //RobotController.Movement(decision);
 
                         robotMemory.EnqueueScan(DistancePointsStaticList.CartesianDistances.ToList());
+
+                        App.Current.Dispatcher.Invoke(() =>
+                        {
+                            GridImage = robotMemory.RenderGrid();
+                        });
 
                         double moveAngle = reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances);
 

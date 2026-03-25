@@ -17,7 +17,7 @@ namespace LidarIndoorNavigation.Helpers
             cartesianPoints.Clear();
             for (int i = 0; i < distances.Count; ++i)
             {
-                if (distances[i] <= 400 || distances[i] > 4600)
+                if (distances[i] <= 200)
                 {
                     continue;
                 }

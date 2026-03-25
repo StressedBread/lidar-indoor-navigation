@@ -14,9 +14,9 @@ namespace LidarIndoorNavigation.Helpers
     public class RobotMemory
     {
         private int gridResolution = 50;
-        private double freeUpdate = 0.1f;
-        private double occupiedUpdate = 0.2f;
-        private double decayRate = 0.98f;
+        private double freeUpdate = 0.1;
+        private double occupiedUpdate = 0.2;
+        private double decayRate = 0.9;
         public static int gridCenter = 100;
 
         public static double[,] Grid { get; } = new double[201, 201];
@@ -98,6 +98,71 @@ namespace LidarIndoorNavigation.Helpers
                 if (e2 < dx) { err += dx; y0 += sy; }
             }
             return cells;
+        }
+
+        public BitmapSource RenderGrid()
+        {
+            int size = 201;
+            int scale = 4;
+            int sectors = 20;
+            double span = 240;
+            double sectorWidth = span / sectors;
+
+            using var bitmap = new SKBitmap(size * scale, size * scale);
+            using var canvas = new SKCanvas(bitmap);
+
+            canvas.Clear(SKColors.White);
+
+            for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    float value = (float)Grid[x, y];
+                    byte gray = (byte)(255 - value * 255);
+                    var color = new SKColor(gray, gray, gray);
+
+                    using var paint = new SKPaint { Color = color };
+                    canvas.DrawRect(x * scale, y * scale, scale, scale, paint);
+                }
+            }
+
+            using var sectorPaint = new SKPaint
+            {
+                Color = SKColors.Blue.WithAlpha(120),
+                StrokeWidth = 1f,
+                IsAntialias = true,
+                IsStroke = true,
+            };
+
+            float cx = gridCenter * scale;
+            float cy = gridCenter * scale;
+            float lineLen = size * scale * 0.5f;
+
+            for (int i = 0; i <= sectors; i++)
+            {
+                double angleDeg = -120 + i * sectorWidth;
+                double angleRad = (angleDeg - 90) * Math.PI / 180;
+                float ex = cx + (float)(lineLen * Math.Cos(angleRad));
+                float ey = cy + (float)(lineLen * Math.Sin(angleRad));
+                canvas.DrawLine(cx, cy, ex, ey, sectorPaint);
+            }
+
+            using var robotPaint = new SKPaint { Color = SKColors.Red };
+
+            canvas.DrawCircle(gridCenter * scale, gridCenter * scale, scale * 2, robotPaint);
+
+            using var image = SKImage.FromBitmap(bitmap);
+            using var data = image.Encode(SKEncodedImageFormat.Png, 100);
+            using var stream = new MemoryStream(data.ToArray());
+
+            var bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.StreamSource = stream;
+            bitmapImage.EndInit();
+            bitmapImage.Freeze();
+
+            return bitmapImage;
         }
     }
 }

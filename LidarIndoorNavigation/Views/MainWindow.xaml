@@ -15,6 +15,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="0">
@@ -76,11 +77,18 @@
             </StackPanel>
         </Grid>
 
-        <lvc:CartesianChart Grid.Row="4" 
+        <lvc:CartesianChart Grid.Row="5" 
                             Series="{Binding Series}"
                             EasingFunction="{x:Null}"
                             XAxes="{Binding XAxes}"
                             YAxes="{Binding YAxes}">
         </lvc:CartesianChart>
+
+        <Image Grid.Row="4"
+               Source="{Binding GridImage}"
+               Width="400"
+               Height="400"
+               RenderOptions.BitmapScalingMode="NearestNeighbor">
+        </Image>
     </Grid>
 </Window>

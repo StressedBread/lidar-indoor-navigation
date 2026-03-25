@@ -10,10 +10,10 @@ namespace LidarIndoorNavigation.Helpers
 {
     internal class ReactiveNavigation
     {
-        const int sectors = 10;
+        const int sectors = 20;
         const double span = 240;
         const double sectorWidth = span / sectors;
-        const double frontRiskThreshold = 0.4;
+        const double frontRiskThreshold = 0.25;
         const double deadZone = 15;
         const int hold = 1;
 
@@ -119,8 +119,8 @@ namespace LidarIndoorNavigation.Helpers
             moveAngle = Math.Atan2(totalX, totalY) * 180 / Math.PI;
             isBlocked = magnitude < 0.3;
 
-            int mid = sectors / 2;
-            double frontRisk = (risks[mid - 1] + risks[mid] + risks[mid + 1]) / 3;
+            int mid = (sectors / 2) - 1;
+            double frontRisk = (risks[mid + 1] + risks[mid]) / 2;
             forwardScale = Math.Max(0, 1 - frontRisk / 1.5);
 
             if (!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
@@ -130,7 +130,7 @@ namespace LidarIndoorNavigation.Helpers
                 moveAngle = leftRisk < rightRisk ? 30 : -30;
             }
 
-            double? goalAngle = WaypointNavigator.GetSteeringAgle(icp.positionX, icp.positionY, icp.heading, forwardScale);
+            /*double? goalAngle = WaypointNavigator.GetSteeringAgle(icp.positionX, icp.positionY, icp.heading, forwardScale);
 
             if (goalAngle.HasValue)
             {
@@ -138,9 +138,9 @@ namespace LidarIndoorNavigation.Helpers
                 double avoidanceWeight = 1 - forwardScale;
                 moveAngle = goalAngle.Value * goalWeight + moveAngle * avoidanceWeight;
             }
-
-            if (goalAngle != null) return goalAngle.Value;
-            else return moveAngle;
+            
+            if (goalAngle != null) return goalAngle.Value;*/
+            return moveAngle;
         }
 
         public (MovementCommands command, double forwardScale) GetCommand(double finalMoveAngle)

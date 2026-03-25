@@ -8,8 +8,8 @@ namespace LidarIndoorNavigation.Helpers
 {
     internal class RiskCalculation
     {
-        int sectors = 10;
-        int distanceCells = 30;
+        int sectors = 20;
+        int distanceCells = 20;
         float sectorAngle = 0;
         float startAngle = 0;
         double rad = 0;
