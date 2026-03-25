@@ -117,7 +117,8 @@ namespace LidarIndoorNavigation.Helpers
 
             double magnitude = Math.Sqrt(totalX * totalX + totalY * totalY);
             moveAngle = Math.Atan2(totalX, totalY) * 180 / Math.PI;
-            isBlocked = magnitude < 0.3;
+            System.Diagnostics.Debug.WriteLine("Magnitude: " + magnitude);
+            isBlocked = magnitude > 8.5;
 
             int mid = (sectors / 2) - 1;
             double frontRisk = (risks[mid + 1] + risks[mid]) / 2;
