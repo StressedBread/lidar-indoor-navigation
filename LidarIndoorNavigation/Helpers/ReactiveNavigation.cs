@@ -14,7 +14,7 @@ namespace LidarIndoorNavigation.Helpers
         const double span = 240;
         const double sectorWidth = span / sectors;
         const double frontRiskThreshold = 1;
-        const double deadZone = 15;
+        const double deadZone = 20;
         const int hold = 1;
 
         ICP icp = new();
