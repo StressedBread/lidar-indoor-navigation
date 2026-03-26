@@ -28,8 +28,6 @@
             <Button Content="Refresh Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding RefreshPortsCommand}"/>
         </StackPanel>
 
-        <TextBlock Grid.Row="1" Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="5" Text="{Binding RobotCommandString}"/>
-
         <Grid Grid.Row="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>

@@ -119,11 +119,12 @@ namespace LidarIndoorNavigation.Helpers
 
             double magnitude = Math.Sqrt(totalX * totalX + totalY * totalY);
             moveAngle = Math.Atan2(totalX, totalY) * 180 / Math.PI;
-            System.Diagnostics.Debug.WriteLine("Magnitude: " + magnitude);
+            System.Diagnostics.Debug.WriteLine("Angle: " + moveAngle);
             isBlocked = magnitude < 1;
 
             int mid = (sectors / 2) - 1;
             double frontRisk = (risks[mid + 1] + risks[mid]) / 2;
+            System.Diagnostics.Debug.WriteLine("Front risk: " + frontRisk);
             forwardScale = Math.Max(0, 1 - frontRisk / 1.5);
 
             if (!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
