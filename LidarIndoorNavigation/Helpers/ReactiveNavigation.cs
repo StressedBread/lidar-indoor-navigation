@@ -113,7 +113,7 @@ namespace LidarIndoorNavigation.Helpers
             {
                 double angle = (-120 + i * sectorWidth + sectorWidth / 2) * Math.PI / 180;
                 double weight = Math.Max(0, 1 - risks[i]);
-                totalX += Math.Sin(angle) * weight;
+                totalX += -Math.Sin(angle) * weight;
                 totalY += Math.Cos(angle) * weight;
             }
 
