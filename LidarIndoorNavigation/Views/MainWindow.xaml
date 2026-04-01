@@ -25,6 +25,7 @@
             <Button Content="Engine" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding EngineCommand}"/>
             <Button Content="TestDataMemory" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding TestDataMemoryCommand}"/>
             <Button Content="Refresh Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding RefreshPortsCommand}"/>
+            <Button Content="Open Windows" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding OpenWindowsCommand}"/>
         </StackPanel>
 
         <Grid Grid.Row="2">

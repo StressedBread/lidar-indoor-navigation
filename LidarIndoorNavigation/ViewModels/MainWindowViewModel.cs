@@ -75,7 +75,7 @@ namespace LidarIndoorNavigation.ViewModels
         public IRelayCommand? RightCommand { get; }
         public IRelayCommand? BackwardCommand { get; }
         public IRelayCommand? StopRobotCommand { get; }
-
+        public IRelayCommand? OpenWindowsCommand { get; }
         public IRelayCommand? TestDataMemoryCommand { get; }
         public IRelayCommand? RefreshPortsCommand { get; }
 
@@ -93,6 +93,7 @@ namespace LidarIndoorNavigation.ViewModels
             StopRobotCommand = new RelayCommand(Stop);
             TestDataMemoryCommand = new RelayCommand(TestDataMemory);
             RefreshPortsCommand = new RelayCommand(RefreshPorts);
+            OpenWindowsCommand = new RelayCommand(OpenWindows);
 
             LoadSerialPorts();
             WaypointNavigator.SetGoal(-1000, 1500);
@@ -131,9 +132,6 @@ namespace LidarIndoorNavigation.ViewModels
             cts = new CancellationTokenSource();
             var token = cts.Token;
             robotMemory.StartBackgroundProcessing(cts.Token);
-
-            OpenGridImageViewer();
-            OpenDataWindow();
 
             try
             {
@@ -348,8 +346,7 @@ namespace LidarIndoorNavigation.ViewModels
             {
                 var viewer = new GridImageView
                 {
-                    DataContext = this,
-                    Owner = Application.Current.MainWindow
+                    DataContext = this
                 };
                 viewer.HorizontalAlignment = HorizontalAlignment.Center;
                 viewer.Show();
@@ -362,8 +359,7 @@ namespace LidarIndoorNavigation.ViewModels
             {
                 var dataWindow = new DataViewerView
                 {
-                    DataContext = this,
-                    Owner = Application.Current.MainWindow
+                    DataContext = this
                 };
                 dataWindow.Show();
             });
@@ -385,6 +381,10 @@ namespace LidarIndoorNavigation.ViewModels
             });
         }
 
-        public record SectorRiskItem(int SectorIndex, double Risk);
+        public void OpenWindows()
+        {
+            OpenDataWindow();
+            OpenGridImageViewer();
+        }
     }
 }
