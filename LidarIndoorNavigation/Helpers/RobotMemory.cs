@@ -168,7 +168,7 @@ namespace LidarIndoorNavigation.Helpers
         public BitmapSource RenderGrid()
         {
             int size = 201;
-            int scale = 4;
+            int scale = 8;
             int sectors = 20;
             double span = 240;
             double sectorWidth = span / sectors;
