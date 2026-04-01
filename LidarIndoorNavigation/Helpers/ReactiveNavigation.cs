@@ -14,12 +14,17 @@ namespace LidarIndoorNavigation.Helpers
         const double span = 240;
         const double sectorWidth = span / sectors;
         const double frontRiskThreshold = 1;
+        const double softThreshold = 0.6;
         const double deadZone = 20;
         const int hold = 1;
 
         double lastMoveAngle = 0;
         int turnCommit = 0;
         double committedAngle = 0;
+
+        bool isTurning = false;
+        int turnFrames = 0;
+        double turnDirection = 0;
 
         ICP icp = new();
 
@@ -45,6 +50,17 @@ namespace LidarIndoorNavigation.Helpers
             risks = riskCalculation.EvaluateSectors();
             
             System.Diagnostics.Debug.WriteLine(string.Join(", ", risks.Select(r => r.ToString("F2"))));
+
+            if (isTurning)
+            {
+                moveAngle = turnDirection;
+                turnFrames--;
+
+                if (turnFrames <= 0)
+                    isTurning = false;
+
+                return (moveAngle, risks, frontRisk: 0);
+            }
 
             double totalX = 0, totalY = 0;
 
@@ -72,7 +88,7 @@ namespace LidarIndoorNavigation.Helpers
                 moveAngle = leftRisk < rightRisk ? 30 : -30;
             }*/
 
-            if (turnCommit > 0)
+            /*if (turnCommit > 0)
             {
                 moveAngle = committedAngle;
                 turnCommit--;
@@ -84,10 +100,23 @@ namespace LidarIndoorNavigation.Helpers
                 committedAngle = leftRisk < rightRisk ? 30 : -30;
                 turnCommit = 5;
                 moveAngle = committedAngle;
+            }*/
+
+            if (frontRisk > softThreshold && !isTurning)
+            {
+                double leftRisk = risks.Skip(mid + 1).Sum();
+                double rightRisk = risks.Take(mid).Sum();
+
+                turnDirection = leftRisk < rightRisk ? 30 : -30;
+
+                isTurning = true;
+                turnFrames = 6; // VERY important tuning parameter
+
+                moveAngle = turnDirection;
             }
 
-            moveAngle = 0.7 * lastMoveAngle + 0.3 * moveAngle;
-            lastMoveAngle = moveAngle;
+            /*moveAngle = 0.7 * lastMoveAngle + 0.3 * moveAngle;
+            lastMoveAngle = moveAngle;*/
 
             /*double? goalAngle = WaypointNavigator.GetSteeringAgle(icp.positionX, icp.positionY, icp.heading, forwardScale);
 
