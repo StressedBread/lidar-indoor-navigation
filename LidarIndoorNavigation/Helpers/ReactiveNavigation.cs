@@ -29,7 +29,7 @@ namespace LidarIndoorNavigation.Helpers
         private int holdCounter = 0;
 
 
-        public double DecideMovement(List<(double x, double y)> cleanScan)
+        public (double moveAngle, double[] risks, double frontRisk) DecideMovement(List<(double x, double y)> cleanScan)
         {
             /*icp.Update(cleanScan);
 
@@ -79,7 +79,7 @@ namespace LidarIndoorNavigation.Helpers
             }
             
             if (goalAngle != null) return goalAngle.Value;*/
-            return moveAngle;
+            return (moveAngle, risks, frontRisk);
         }
 
         public (MovementCommands command, double forwardScale) GetCommand(double finalMoveAngle)

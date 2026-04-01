@@ -8,7 +8,130 @@
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
         Title="DataViewerView" Height="450" Width="800">
-    <Grid>
-        
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <TextBlock Grid.Row="0" 
+                   Text="Robot Telemetry"
+                   Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                   Margin="0,0,0,16"/>
+
+        <!-- Sector Risks -->
+        <materialDesign:Card Grid.Row="1" Margin="0,0,0,16">
+            <StackPanel Margin="16">
+                <TextBlock Text="Sector Risks" 
+                           Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                           Margin="0,0,0,8"/>
+
+                <ItemsControl ItemsSource="{Binding SectorRisks}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Grid.Column="0" 
+                                           Text="{Binding SectorNumber, StringFormat='Sector {0}:'}"
+                                           Width="80"
+                                           VerticalAlignment="Center"/>
+
+                                <ProgressBar Grid.Column="1" 
+                                             Value="{Binding Risk}"
+                                             Minimum="0"
+                                             Maximum="1"
+                                             Height="8"
+                                             Margin="8,0"/>
+
+                                <TextBlock Grid.Column="2" 
+                                           Text="{Binding Risk, StringFormat='{}{0:P0}'}"
+                                           Width="50"
+                                           TextAlignment="Right"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </materialDesign:Card>
+
+        <!-- Frontal Risk -->
+        <materialDesign:Card Grid.Row="2" Margin="0,0,0,16">
+            <Grid Margin="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Frontal Risk" 
+                               Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
+                    <ProgressBar Value="{Binding FrontalRisk}"
+                                 Minimum="0"
+                                 Maximum="1"
+                                 Height="8"
+                                 Margin="0,8,0,0"/>
+                </StackPanel>
+
+                <TextBlock Grid.Column="1" 
+                           Text="{Binding FrontalRisk, StringFormat='{}{0:P0}'}"
+                           Style="{StaticResource MaterialDesignHeadline4TextBlock}"
+                           VerticalAlignment="Center"
+                           Margin="16,0,0,0"/>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- Angle -->
+        <materialDesign:Card Grid.Row="3" Margin="0,0,0,16">
+            <Grid Margin="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" 
+                           Text="Angle" 
+                           Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                           VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Column="1" 
+                           Text="{Binding Angle, StringFormat='{}{0:F2}°'}"
+                           Style="{StaticResource MaterialDesignHeadline4TextBlock}"
+                           VerticalAlignment="Center"/>
+            </Grid>
+        </materialDesign:Card>
+
+        <!-- Command -->
+        <materialDesign:Card Grid.Row="4">
+            <Grid Margin="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" 
+                           Text="Command" 
+                           Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                           VerticalAlignment="Center"/>
+
+                <materialDesign:Chip Grid.Column="1"
+                                     Content="{Binding Command}"
+                                     IconBackground="{DynamicResource PrimaryHueMidBrush}"
+                                     IconForeground="{DynamicResource PrimaryHueMidForegroundBrush}">
+                    <materialDesign:Chip.Icon>
+                        <materialDesign:PackIcon Kind="RobotIndustrial"/>
+                    </materialDesign:Chip.Icon>
+                </materialDesign:Chip>
+            </Grid>
+        </materialDesign:Card>
     </Grid>
 </Window>

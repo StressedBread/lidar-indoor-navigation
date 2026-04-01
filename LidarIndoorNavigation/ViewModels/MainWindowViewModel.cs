@@ -49,6 +49,18 @@ namespace LidarIndoorNavigation.ViewModels
         [ObservableProperty]
         private BitmapSource? gridImage;
 
+        [ObservableProperty]
+        private ObservableCollection<SectorRiskItem> sectorRisks = new();
+
+        [ObservableProperty]
+        private double frontalRisk;
+
+        [ObservableProperty]
+        private double angle;
+
+        [ObservableProperty]
+        private string command = string.Empty;
+
         public ISeries[] Series { get; set; }
         public Axis[] XAxes { get; set; }
         public Axis[] YAxes { get; set; }
@@ -63,7 +75,7 @@ namespace LidarIndoorNavigation.ViewModels
         public IRelayCommand? RightCommand { get; }
         public IRelayCommand? BackwardCommand { get; }
         public IRelayCommand? StopRobotCommand { get; }
- 
+
         public IRelayCommand? TestDataMemoryCommand { get; }
         public IRelayCommand? RefreshPortsCommand { get; }
 
@@ -121,6 +133,7 @@ namespace LidarIndoorNavigation.ViewModels
             robotMemory.StartBackgroundProcessing(cts.Token);
 
             OpenGridImageViewer();
+            OpenDataWindow();
 
             try
             {
@@ -212,12 +225,13 @@ namespace LidarIndoorNavigation.ViewModels
                             GridImage = robotMemory.RenderGrid();
                         });
 
-                        double moveAngle = reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances);
+                        (double moveAngle, double[] risks, double frontRisk) = reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances);
 
                         var (command, forwardScale) = reactiveNavigation.GetCommand(moveAngle);
 
                         RobotController.Movement(command);
 
+                        UpdateData(risks, frontRisk, moveAngle, command.ToString());
                         //var (leftSpeed, rightSpeed) = RobotController.AngleToWheelSpeeds(reactiveNavigation.moveAngle, forwardScale, command == MovementCommands.Stop);
 
                         System.Diagnostics.Debug.WriteLine("\n********");
@@ -341,5 +355,36 @@ namespace LidarIndoorNavigation.ViewModels
                 viewer.Show();
             });
         }
+
+        private void OpenDataWindow()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var dataWindow = new DataViewerView
+                {
+                    DataContext = this,
+                    Owner = Application.Current.MainWindow
+                };
+                dataWindow.Show();
+            });
+        }
+
+        public void UpdateData(double[] sectorRisks, double frontalRisk, double angle, string command)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                SectorRisks.Clear();
+                for (int i = 0; i < sectorRisks.Length; i++)
+                {
+                    SectorRisks.Add(new SectorRiskItem(i, sectorRisks[i]));
+                }
+
+                FrontalRisk = frontalRisk;
+                Angle = angle;
+                Command = command;
+            });
+        }
+
+        public record SectorRiskItem(int SectorIndex, double Risk);
     }
 }
