@@ -20,7 +20,7 @@ namespace LidarIndoorNavigation.Helpers
         private static SerialPort? selectedSerialPort1; //Seriová linka pre Motory
         private static SerialPort? selectedSerialPort2; //Seriová linka pre Napájanie
         private static string SECUREMARK = "*";
-        private static string maxSpeedString = "3000";
+        private static string maxSpeedString = "5000";
         private static int maxSpeed = 5000;
         private static int minSpeed = 2500;
         private static bool Electronic = false;
