@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using LidarIndoorNavigation.Helpers;
 using LidarIndoorNavigation.Models;
+using LidarIndoorNavigation.Views;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
@@ -62,7 +63,7 @@ namespace LidarIndoorNavigation.ViewModels
         public IRelayCommand? RightCommand { get; }
         public IRelayCommand? BackwardCommand { get; }
         public IRelayCommand? StopRobotCommand { get; }
-
+ 
         public IRelayCommand? TestDataMemoryCommand { get; }
         public IRelayCommand? RefreshPortsCommand { get; }
 
@@ -118,6 +119,8 @@ namespace LidarIndoorNavigation.ViewModels
             cts = new CancellationTokenSource();
             var token = cts.Token;
             robotMemory.StartBackgroundProcessing(cts.Token);
+
+            OpenGridImageViewer();
 
             try
             {
@@ -323,6 +326,20 @@ namespace LidarIndoorNavigation.ViewModels
             {
                 ComPorts.Add(port);
             }
+        }
+
+        private void OpenGridImageViewer()
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var viewer = new GridImageView
+                {
+                    DataContext = this,
+                    Owner = Application.Current.MainWindow
+                };
+                viewer.HorizontalAlignment = HorizontalAlignment.Center;
+                viewer.Show();
+            });
         }
     }
 }
