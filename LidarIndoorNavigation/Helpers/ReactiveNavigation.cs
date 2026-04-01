@@ -17,6 +17,10 @@ namespace LidarIndoorNavigation.Helpers
         const double deadZone = 20;
         const int hold = 1;
 
+        double lastMoveAngle = 0;
+        int turnCommit = 0;
+        double committedAngle = 0;
+
         ICP icp = new();
 
         RiskCalculation riskCalculation = new();
@@ -62,12 +66,28 @@ namespace LidarIndoorNavigation.Helpers
             System.Diagnostics.Debug.WriteLine("Front risk: " + frontRisk);
             forwardScale = Math.Max(0, 1 - frontRisk / 1.5);
 
-            if (!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
+            /*if (!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
+            {
+                
+                moveAngle = leftRisk < rightRisk ? 30 : -30;
+            }*/
+
+            if (turnCommit > 0)
+            {
+                moveAngle = committedAngle;
+                turnCommit--;
+            }
+            else if (!isBlocked && frontRisk > frontRiskThreshold)
             {
                 double leftRisk = risks.Skip(mid + 1).Sum();
                 double rightRisk = risks.Take(mid).Sum();
-                moveAngle = leftRisk < rightRisk ? 30 : -30;
+                committedAngle = leftRisk < rightRisk ? 30 : -30;
+                turnCommit = 5;
+                moveAngle = committedAngle;
             }
+
+            moveAngle = 0.7 * lastMoveAngle + 0.3 * moveAngle;
+            lastMoveAngle = moveAngle;
 
             /*double? goalAngle = WaypointNavigator.GetSteeringAgle(icp.positionX, icp.positionY, icp.heading, forwardScale);
 
