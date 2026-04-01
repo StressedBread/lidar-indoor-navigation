@@ -55,6 +55,7 @@ namespace LidarIndoorNavigation.Helpers
             {
                 moveAngle = turnDirection;
                 turnFrames--;
+                System.Diagnostics.Debug.WriteLine("Turn Frames: " + turnFrames);
 
                 if (turnFrames <= 0)
                     isTurning = false;
@@ -110,7 +111,7 @@ namespace LidarIndoorNavigation.Helpers
                 turnDirection = leftRisk < rightRisk ? 30 : -30;
 
                 isTurning = true;
-                turnFrames = 6; // VERY important tuning parameter
+                turnFrames = 18; // VERY important tuning parameter
 
                 moveAngle = turnDirection;
             }
