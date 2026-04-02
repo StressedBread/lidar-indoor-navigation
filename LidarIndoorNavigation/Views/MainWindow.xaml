@@ -36,8 +36,9 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Row="0">
-                <RepeatButton Content="Forward" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ForwardCommand}"/>    
-                <ProgressBar 
+                <RepeatButton Content="Forward" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ForwardCommand}"/>
+                <Slider x:Name="DistanceSliderValue" Minimum="5" Maximum="50" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DistanceCellNumber, Mode=TwoWay}" Margin="5" Width="300" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding ElementName=DistanceSliderValue, Path=Value}" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="20"/>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.Row="1">

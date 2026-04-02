@@ -43,7 +43,7 @@ namespace LidarIndoorNavigation.Helpers
         private int holdCounter = 0;
 
 
-        public (double moveAngle, double[] risks, double frontRisk) DecideMovement(List<(double x, double y)> cleanScan)
+        public (double moveAngle, double[] risks, double frontRisk) DecideMovement(List<(double x, double y)> cleanScan, int distanceCells)
         {
             /*icp.Update(cleanScan);
 
@@ -52,9 +52,9 @@ namespace LidarIndoorNavigation.Helpers
                 icp.Reset();
             }*/
 
-            risks = riskCalculation.EvaluateSectors();
+            risks = riskCalculation.EvaluateSectors(distanceCells);
             
-            System.Diagnostics.Debug.WriteLine(string.Join(", ", risks.Select(r => r.ToString("F2"))));
+            System.Diagnostics.Debug.WriteLine(distanceCells);
 
             if (isTurning)
             {

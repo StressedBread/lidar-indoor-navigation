@@ -9,12 +9,12 @@ namespace LidarIndoorNavigation.Helpers
     internal class RiskCalculation
     {
         int sectors = 20;
-        int distanceCells = 15;
+        //int distanceCells = 15;
         float sectorAngle = 0;
         float startAngle = 0;
         double rad = 0;
 
-        public double[] EvaluateSectors()
+        public double[] EvaluateSectors(int distanceCells)
         {
             double[] risks = new double[sectors];
             sectorAngle = 240f / sectors;
