@@ -8,7 +8,7 @@
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="Auto">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -37,6 +37,7 @@
 
             <StackPanel Orientation="Horizontal" Grid.Row="0">
                 <RepeatButton Content="Forward" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ForwardCommand}"/>    
+                <ProgressBar 
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.Row="1">

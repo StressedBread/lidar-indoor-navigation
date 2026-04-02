@@ -26,7 +26,7 @@ namespace LidarIndoorNavigation.Helpers
         double leftRightCounter = 0;
         bool isTurning = false;
         int turnFrames = 0;
-        int turnMiliSeconds = 2000;
+        int turnMiliSeconds = 600;
         double turnDirection = 0;
 
         private Stopwatch turnStopwatch = new();
@@ -58,7 +58,7 @@ namespace LidarIndoorNavigation.Helpers
 
             if (isTurning)
             {
-                turnStopwatch.Restart();
+                
                 /*moveAngle = turnDirection;
                 turnFrames--;
                 System.Diagnostics.Debug.WriteLine("Turn Frames: " + turnFrames);
@@ -69,9 +69,10 @@ namespace LidarIndoorNavigation.Helpers
                 if (turnStopwatch.ElapsedMilliseconds >= turnMiliSeconds)
                 {
                     isTurning = false;
-                    leftRightCounter = 0;
-                    return (moveAngle, risks, frontRisk: 0);
-                }                
+                    leftRightCounter = 0;                    
+                }
+
+                return (moveAngle, risks, frontRisk: 0);
             }
 
             double totalX = 0, totalY = 0;
@@ -99,7 +100,8 @@ namespace LidarIndoorNavigation.Helpers
                 double leftRisk = risks.Skip(mid + 1).Sum();
                 double rightRisk = risks.Take(mid).Sum();
                 moveAngle = leftRisk < rightRisk ? 30 : -30;
-                isTurning = true;                
+                isTurning = true;
+                turnStopwatch.Restart();
             }
             else if(!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
             {
