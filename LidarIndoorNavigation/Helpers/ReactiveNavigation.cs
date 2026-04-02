@@ -54,7 +54,7 @@ namespace LidarIndoorNavigation.Helpers
 
             risks = riskCalculation.EvaluateSectors(distanceCells);
             
-            System.Diagnostics.Debug.WriteLine(distanceCells);
+            System.Diagnostics.Debug.WriteLine("Front Risk Threshold: " + frontRiskThreshold);
 
             if (isTurning && leftRightCounter >= 3)
             {
