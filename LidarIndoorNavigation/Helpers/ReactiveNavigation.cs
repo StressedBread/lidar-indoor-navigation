@@ -22,8 +22,10 @@ namespace LidarIndoorNavigation.Helpers
         int turnCommit = 0;
         double committedAngle = 0;
 
+        double leftRightCounter = 0;
         bool isTurning = false;
         int turnFrames = 0;
+        int turnMiliSeconds = 2000;
         double turnDirection = 0;
 
         ICP icp = new();
@@ -53,12 +55,15 @@ namespace LidarIndoorNavigation.Helpers
 
             if (isTurning)
             {
-                moveAngle = turnDirection;
+                /*moveAngle = turnDirection;
                 turnFrames--;
                 System.Diagnostics.Debug.WriteLine("Turn Frames: " + turnFrames);
 
                 if (turnFrames <= 0)
-                    isTurning = false;
+                    isTurning = false;*/
+
+                Thread.Sleep(turnMiliSeconds);
+                leftRightCounter = 0;
 
                 return (moveAngle, risks, frontRisk: 0);
             }
@@ -83,11 +88,21 @@ namespace LidarIndoorNavigation.Helpers
             System.Diagnostics.Debug.WriteLine("Front risk: " + frontRisk);
             forwardScale = Math.Max(0, 1 - frontRisk / 1.5);
 
-            /*if (!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
+            if (leftRightCounter >= 3)
             {
-                
+                double leftRisk = risks.Skip(mid + 1).Sum();
+                double rightRisk = risks.Take(mid).Sum();
                 moveAngle = leftRisk < rightRisk ? 30 : -30;
-            }*/
+                isTurning = true;
+
+            }
+            else (!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
+            {
+                double leftRisk = risks.Skip(mid + 1).Sum();
+                double rightRisk = risks.Take(mid).Sum();
+                moveAngle = leftRisk < rightRisk ? 30 : -30;
+                leftRightCounter += 0.5;
+            }
 
             /*if (turnCommit > 0)
             {
@@ -103,7 +118,7 @@ namespace LidarIndoorNavigation.Helpers
                 moveAngle = committedAngle;
             }*/
 
-            if (frontRisk > softThreshold && !isTurning)
+            /*if (frontRisk > softThreshold && !isTurning)
             {
                 double leftRisk = risks.Skip(mid + 1).Sum();
                 double rightRisk = risks.Take(mid).Sum();
@@ -114,7 +129,7 @@ namespace LidarIndoorNavigation.Helpers
                 turnFrames = 18; // VERY important tuning parameter
 
                 moveAngle = turnDirection;
-            }
+            }*/
 
             /*moveAngle = 0.7 * lastMoveAngle + 0.3 * moveAngle;
             lastMoveAngle = moveAngle;*/
