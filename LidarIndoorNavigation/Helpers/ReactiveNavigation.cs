@@ -14,7 +14,7 @@ namespace LidarIndoorNavigation.Helpers
         const int sectors = 20;
         const double span = 240;
         const double sectorWidth = span / sectors;
-        const double frontRiskThreshold = 1;
+        //const double frontRiskThreshold = 1;
         const double softThreshold = 0.6;
         const double deadZone = 20;
         const int hold = 1;
@@ -26,7 +26,7 @@ namespace LidarIndoorNavigation.Helpers
         double leftRightCounter = 0;
         bool isTurning = false;
         int turnFrames = 0;
-        int turnMiliSeconds = 600;
+        int turnMiliSeconds = 300;
         double turnDirection = 0;
 
         private Stopwatch turnStopwatch = new();
@@ -43,7 +43,7 @@ namespace LidarIndoorNavigation.Helpers
         private int holdCounter = 0;
 
 
-        public (double moveAngle, double[] risks, double frontRisk) DecideMovement(List<(double x, double y)> cleanScan, int distanceCells)
+        public (double moveAngle, double[] risks, double frontRisk) DecideMovement(List<(double x, double y)> cleanScan, int distanceCells, int frontRiskThreshold)
         {
             /*icp.Update(cleanScan);
 
@@ -56,7 +56,7 @@ namespace LidarIndoorNavigation.Helpers
             
             System.Diagnostics.Debug.WriteLine(distanceCells);
 
-            if (isTurning)
+            if (isTurning && leftRightCounter >= 3)
             {
                 
                 /*moveAngle = turnDirection;

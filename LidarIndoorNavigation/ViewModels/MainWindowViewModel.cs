@@ -62,7 +62,9 @@ namespace LidarIndoorNavigation.ViewModels
         private string command = string.Empty;
 
         [ObservableProperty]
-        private int distanceSliderValue;
+        private int distanceSliderValue = 15;
+        [ObservableProperty]
+        private int frontRiskSliderValue = 1;
 
         public ISeries[] Series { get; set; }
         public Axis[] XAxes { get; set; }
@@ -226,7 +228,7 @@ namespace LidarIndoorNavigation.ViewModels
                             GridImage = robotMemory.RenderGrid(DistanceSliderValue);
                         });
 
-                        (double moveAngle, double[] risks, double frontRisk) = reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances, DistanceSliderValue);
+                        (double moveAngle, double[] risks, double frontRisk) = reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances, DistanceSliderValue, FrontRiskSliderValue);
 
                         var (command, forwardScale) = reactiveNavigation.GetCommand(moveAngle);
 

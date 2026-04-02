@@ -15,6 +15,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="0">
@@ -27,8 +28,17 @@
             <Button Content="Refresh Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding RefreshPortsCommand}"/>
             <Button Content="Open Windows" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding OpenWindowsCommand}"/>
         </StackPanel>
+        <StackPanel Grid.Row="1" HorizontalAlignment="Left">
+            <TextBlock Text="Distance Cells" FontSize="20" Margin="5"/>
+            <Slider Minimum="5" Maximum="50" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DistanceSliderValue, Mode=TwoWay}" Margin="5" Width="300" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding DistanceSliderValue}" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="20"/>
+            
+            <TextBlock Text="Front Risk Threshold" FontSize="20" Margin="5"/>
+            <Slider Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding FrontRiskSliderValue, Mode=TwoWay}" Margin="5" Width="300" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding FrontRiskSliderValue}" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="20"/>
+        </StackPanel>
 
-        <Grid Grid.Row="2">
+            <Grid Grid.Row="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -37,8 +47,6 @@
 
             <StackPanel Orientation="Horizontal" Grid.Row="0">
                 <RepeatButton Content="Forward" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ForwardCommand}"/>
-                <Slider  Minimum="5" Maximum="50" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DistanceSliderValue, Mode=TwoWay}" Margin="5" Width="300" VerticalAlignment="Center"/>
-                <TextBlock Text="{Binding DistanceSliderValue}" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="20"/>
             </StackPanel>
             
             <StackPanel Orientation="Horizontal" Grid.Row="1">
