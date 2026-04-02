@@ -58,6 +58,7 @@ namespace LidarIndoorNavigation.Helpers
 
             if (isTurning)
             {
+                turnStopwatch.Restart();
                 /*moveAngle = turnDirection;
                 turnFrames--;
                 System.Diagnostics.Debug.WriteLine("Turn Frames: " + turnFrames);
@@ -98,8 +99,7 @@ namespace LidarIndoorNavigation.Helpers
                 double leftRisk = risks.Skip(mid + 1).Sum();
                 double rightRisk = risks.Take(mid).Sum();
                 moveAngle = leftRisk < rightRisk ? 30 : -30;
-                isTurning = true;
-                turnStopwatch.Restart();
+                isTurning = true;                
             }
             else if(!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
             {
