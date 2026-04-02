@@ -223,7 +223,7 @@ namespace LidarIndoorNavigation.ViewModels
 
                         App.Current.Dispatcher.Invoke(() =>
                         {
-                            GridImage = robotMemory.RenderGrid();
+                            GridImage = robotMemory.RenderGrid(DistanceSliderValue);
                         });
 
                         (double moveAngle, double[] risks, double frontRisk) = reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances, DistanceSliderValue);

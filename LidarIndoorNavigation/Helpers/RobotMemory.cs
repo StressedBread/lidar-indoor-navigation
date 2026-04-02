@@ -165,7 +165,7 @@ namespace LidarIndoorNavigation.Helpers
             return bitmapImage;
         }*/
 
-        public BitmapSource RenderGrid()
+        /*public BitmapSource RenderGrid()
         {
             int size = 201;
             int scale = 8;
@@ -224,6 +224,91 @@ namespace LidarIndoorNavigation.Helpers
             writeableBitmap.Lock();
 
             // Copy pixels directly
+            var pixels = bitmap.GetPixels();
+            unsafe
+            {
+                Buffer.MemoryCopy(
+                    pixels.ToPointer(),
+                    writeableBitmap.BackBuffer.ToPointer(),
+                    writeableBitmap.BackBufferStride * height,
+                    bitmap.ByteCount
+                );
+            }
+
+            writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, width, height));
+            writeableBitmap.Unlock();
+            writeableBitmap.Freeze();
+
+            return writeableBitmap;
+        }*/
+
+        public BitmapSource RenderGrid(double radius)
+        {
+            int size = 201;
+            int scale = 8;
+            int sectors = 20;
+            double span = 240;
+            double sectorWidth = span / sectors;
+            int width = size * scale;
+            int height = size * scale;
+            using var bitmap = new SKBitmap(width, height);
+            using var canvas = new SKCanvas(bitmap);
+            canvas.Clear(SKColors.White);
+
+            // Draw grid
+            for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    float value = (float)Grid[x, y];
+                    byte gray = (byte)(255 - value * 255);
+                    var color = new SKColor(gray, gray, gray);
+                    using var paint = new SKPaint { Color = color };
+                    canvas.DrawRect(x * scale, y * scale, scale, scale, paint);
+                }
+            }
+
+            // Draw sector lines
+            using var sectorPaint = new SKPaint
+            {
+                Color = SKColors.Blue.WithAlpha(120),
+                StrokeWidth = 1f,
+                IsAntialias = true,
+                IsStroke = true,
+            };
+            float cx = gridCenter * scale;
+            float cy = gridCenter * scale;
+            float lineLen = size * scale * 0.5f;
+
+            for (int i = 0; i <= sectors; i++)
+            {
+                double angleDeg = -120 + i * sectorWidth;
+                double angleRad = (angleDeg - 90) * Math.PI / 180;
+                float ex = cx + (float)(lineLen * Math.Cos(angleRad));
+                float ey = cy + (float)(lineLen * Math.Sin(angleRad));
+                canvas.DrawLine(cx, cy, ex, ey, sectorPaint);
+            }
+
+            // Draw radius circle using passed parameter
+            using var radiusPaint = new SKPaint
+            {
+                Color = SKColors.Green.WithAlpha(100),
+                StrokeWidth = 2f,
+                IsAntialias = true,
+                IsStroke = true,
+                Style = SKPaintStyle.Stroke
+            };
+            float radiusPixels = (float)radius * scale;
+            canvas.DrawCircle(cx, cy, radiusPixels, radiusPaint);
+
+            // Draw robot
+            using var robotPaint = new SKPaint { Color = SKColors.Red };
+            canvas.DrawCircle(gridCenter * scale, gridCenter * scale, scale * 2, robotPaint);
+
+            // Convert directly to WriteableBitmap
+            var writeableBitmap = new WriteableBitmap(width, height, 96, 96, PixelFormats.Bgra32, null);
+            writeableBitmap.Lock();
+
             var pixels = bitmap.GetPixels();
             unsafe
             {
