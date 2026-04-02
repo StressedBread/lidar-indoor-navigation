@@ -1,6 +1,7 @@
 ﻿using LidarIndoorNavigation.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,6 +28,8 @@ namespace LidarIndoorNavigation.Helpers
         int turnFrames = 0;
         int turnMiliSeconds = 2000;
         double turnDirection = 0;
+
+        private Stopwatch turnStopwatch = new();
 
         ICP icp = new();
 
@@ -62,10 +65,12 @@ namespace LidarIndoorNavigation.Helpers
                 if (turnFrames <= 0)
                     isTurning = false;*/
 
-                Thread.Sleep(turnMiliSeconds);
-                leftRightCounter = 0;
-
-                return (moveAngle, risks, frontRisk: 0);
+                if (turnStopwatch.ElapsedMilliseconds >= turnMiliSeconds)
+                {
+                    isTurning = false;
+                    leftRightCounter = 0;
+                    return (moveAngle, risks, frontRisk: 0);
+                }                
             }
 
             double totalX = 0, totalY = 0;
@@ -94,7 +99,7 @@ namespace LidarIndoorNavigation.Helpers
                 double rightRisk = risks.Take(mid).Sum();
                 moveAngle = leftRisk < rightRisk ? 30 : -30;
                 isTurning = true;
-
+                turnStopwatch.Restart();
             }
             else (!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
             {
