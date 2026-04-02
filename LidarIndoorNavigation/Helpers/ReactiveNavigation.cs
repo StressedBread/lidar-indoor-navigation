@@ -101,7 +101,7 @@ namespace LidarIndoorNavigation.Helpers
                 isTurning = true;
                 turnStopwatch.Restart();
             }
-            else (!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
+            else if(!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
             {
                 double leftRisk = risks.Skip(mid + 1).Sum();
                 double rightRisk = risks.Take(mid).Sum();
