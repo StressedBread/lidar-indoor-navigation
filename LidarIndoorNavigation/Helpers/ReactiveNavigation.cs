@@ -158,9 +158,9 @@ namespace LidarIndoorNavigation.Helpers
         {
             MovementCommands raw;
 
-            if (finalMoveAngle > deadZone)
+            if (finalMoveAngle < -deadZone)
                 raw = MovementCommands.TurnLeft;
-            else if (finalMoveAngle < -deadZone)
+            else if (finalMoveAngle > deadZone)
                 raw = MovementCommands.TurnRight;
             else
                 raw = MovementCommands.Forward;
