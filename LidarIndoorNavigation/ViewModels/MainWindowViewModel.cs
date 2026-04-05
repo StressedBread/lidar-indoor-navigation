@@ -235,7 +235,7 @@ namespace LidarIndoorNavigation.ViewModels
                             GridImage = robotMemory.RenderGrid(DistanceSliderValue, SectorCountSliderValue);
                         });
 
-                        (double moveAngle, double[] risks, double frontRisk) = reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances, DistanceSliderValue, FrontRiskSliderValue, SectorCountSliderValue);
+                        (double moveAngle, double[] risks, double frontRisk) = reactiveNavigation.DecideMovement(DistanceSliderValue, FrontRiskSliderValue, SectorCountSliderValue);
 
                         var (command, forwardScale) = reactiveNavigation.GetCommand(moveAngle);
 

@@ -26,7 +26,7 @@ namespace LidarIndoorNavigation.Helpers
         private int holdCounter = 0;
 
 
-        public (double moveAngle, double[] risks, double frontRisk) DecideMovement(List<(double x, double y)> cleanScan, int distanceCells, int frontRiskThreshold, int sectors)
+        public (double moveAngle, double[] risks, double frontRisk) DecideMovement(int distanceCells, int frontRiskThreshold, int sectors)
         {
             double sectorWidth = span / sectors;
             if (risks == null || lastSectorCount != sectors)
