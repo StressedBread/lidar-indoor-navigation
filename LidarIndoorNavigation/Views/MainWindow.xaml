@@ -8,89 +8,204 @@
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
-        Title="MainWindow" Height="450" Width="Auto">
-    
+        Title="MainWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
     <Grid>
+        <!--Main grid definitions-->
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Margin="5" Grid.Row="0">
-            <Button Content="Start" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StartCommand}"/>
-            <Button Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StopCommand}"/>
-            <Button Content="Open/Close Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding OpenPortsCommand}"/>
-            <Button Content="Electronic" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ElectronicCommand}"/>
-            <Button Content="Engine" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding EngineCommand}"/>
-            <Button Content="TestDataMemory" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding TestDataMemoryCommand}"/>
-            <Button Content="Refresh Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding RefreshPortsCommand}"/>
-            <Button Content="Open Windows" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding OpenWindowsCommand}"/>
-        </StackPanel>
-        <StackPanel Grid.Row="1" HorizontalAlignment="Left">
-            <TextBlock Text="Distance Cells" FontSize="20" Margin="5"/>
-            <Slider Minimum="5" Maximum="50" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DistanceSliderValue, Mode=TwoWay}" Margin="5" Width="300" VerticalAlignment="Center"/>
-            <TextBlock Text="{Binding DistanceSliderValue}" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="20"/>
-            
-            <TextBlock Text="Front Risk Threshold" FontSize="20" Margin="5"/>
-            <Slider Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding FrontRiskSliderValue, Mode=TwoWay}" Margin="5" Width="300" VerticalAlignment="Center"/>
-            <TextBlock Text="{Binding FrontRiskSliderValue}" VerticalAlignment="Center" Margin="10,0,0,0" FontSize="20"/>
-        </StackPanel>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-            <Grid Grid.Row="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+        <!--Robot Navigation Controller-->
+        <Border Grid.Row="0"
+                Grid.ColumnSpan="2"
+                BorderBrush="{DynamicResource MaterialDesignDivider}"
+                BorderThickness="3"
+                Margin="5,5,5,0"
+                Padding="12, 10">
+            <DockPanel>
+                <TextBlock Text="Robot Navigation Controller" 
+                           FontSize="24"
+                           FontWeight="Bold"
+                           DockPanel.Dock="Top"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Center"
+                            DockPanel.Dock="Bottom">
+                    <Button Content="Start" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StartCommand}"/>
+                    <Button Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StopCommand}"/>
+                    <Button Content="Open Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding OpenPortsCommand}"/>
+                    <Button Content="Refresh Ports" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding RefreshPortsCommand}"/>
+                    <Button Content="Open Views" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding OpenWindowsCommand}"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="0">
-                <RepeatButton Content="Forward" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding ForwardCommand}"/>
-            </StackPanel>
-            
-            <StackPanel Orientation="Horizontal" Grid.Row="1">
-                <RepeatButton Content="Left" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding LeftCommand}"/>
-                <RepeatButton Content="Right" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding RightCommand}"/>
-            </StackPanel>
-            
-            <StackPanel Orientation="Horizontal" Grid.Row="2">
-                <RepeatButton Content="Back" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding BackwardCommand}"/>
-                <RepeatButton Content="Stop" Style="{StaticResource MaterialDesignRaisedButton}" Margin="5" Command="{Binding StopRobotCommand}"/>
-            </StackPanel>
+        <!--Left Panel-->
+        <Border Grid.Row="1"
+                Grid.Column="0"
+                BorderBrush="{DynamicResource MaterialDesignDivider}"
+                BorderThickness="3,0,3,3"
+                Margin="5,0,0,5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        </Grid>
+                <!--Robot Power-->
+                <Border Grid.Row="0"
+                        BorderBrush="{StaticResource MaterialDesignDivider}"
+                        BorderThickness="0,0,0,2"
+                        Padding="10">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Robot Power" 
+                               FontSize="16"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"/>
+                        <Button Content="Electronics" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Height="28" MaxWidth="90" FontSize="12" Command="{Binding ElectronicCommand}"/>
+                        <Button Content="Engine" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Height="28" MaxWidth="90" FontSize="12" Command="{Binding EngineCommand}"/>
+                    </StackPanel>
+                </Border>
 
-        <Grid Grid.Row="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            
-            <StackPanel Orientation ="Vertical" Margin="5" Grid.Column="0">
-                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Scanner port" VerticalAlignment="Center" Margin="5"/>
-                <ComboBox Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort1}"/>
-            </StackPanel>
+                <!--Settings-->
+                <Border Grid.Row="1"
+                        BorderBrush="{StaticResource MaterialDesignDivider}"
+                        BorderThickness="0,0,0,2"
+                        Padding="10">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Settings" 
+                               FontSize="16"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"/>
+                        <TextBlock Text="Distance Cells" FontSize="14" Margin="5"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width=".15*"/>
+                            </Grid.ColumnDefinitions>
+                            <Slider Grid.Column="0" Minimum="5" Maximum="50" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding DistanceSliderValue, Mode=TwoWay}" Margin="5" Width="Auto" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding DistanceSliderValue}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" FontSize="14"/>
+                        </Grid>
 
-            <StackPanel Orientation ="Vertical" Margin="5" Grid.Column="1">
-                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Electronic port" VerticalAlignment="Center" Margin="5"/>
-                <ComboBox Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort2}"/>
-            </StackPanel>
+                        <TextBlock Text="Front Risk Threshold" FontSize="14" Margin="5"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width=".15*"/>
+                            </Grid.ColumnDefinitions>
+                            <Slider Grid.Column="0" Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding FrontRiskSliderValue, Mode=TwoWay}" Margin="5" Width="Auto" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding FrontRiskSliderValue}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" FontSize="14"/>
+                        </Grid>
 
-            <StackPanel Orientation ="Vertical" Margin="5" Grid.Column="2">
-                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Engine port" VerticalAlignment="Center" Margin="5"/>
-                <ComboBox Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort3}"/>
-            </StackPanel>
-        </Grid>
+                        <TextBlock Text="Sectors" FontSize="14" Margin="5"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width=".15*"/>
+                            </Grid.ColumnDefinitions>
+                            <Slider Grid.Column="0" Minimum="1" Maximum="40" TickFrequency="1" IsSnapToTickEnabled="True" Value="{Binding SectorCountSliderValue, Mode=TwoWay}" Margin="5" Width="Auto" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="1" Text="{Binding SectorCountSliderValue}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10,0,0,0" FontSize="14"/>
+                        </Grid>
+                    </StackPanel>
+                </Border>
 
-        <lvc:CartesianChart Grid.Row="4" 
-                            Series="{Binding Series}"
-                            EasingFunction="{x:Null}"
-                            XAxes="{Binding XAxes}"
-                            YAxes="{Binding YAxes}">
-        </lvc:CartesianChart>
+                <!--Manual Control-->
+                <Border Grid.Row="2"
+                        BorderBrush="{StaticResource MaterialDesignDivider}"
+                        BorderThickness="0,0,0,2"
+                        Padding="10">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Manual Control" 
+                               FontSize="16"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <RepeatButton Content="Forward" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Command="{Binding ForwardCommand}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <RepeatButton Content="Left" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Command="{Binding LeftCommand}"/>
+                            <RepeatButton Content="Stop" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Command="{Binding StopRobotCommand}"/>
+                            <RepeatButton Content="Right" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Command="{Binding RightCommand}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <RepeatButton Content="Backward" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Command="{Binding BackwardCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!--Port Selection-->
+                <Border Grid.Row="3"
+                        BorderBrush="{StaticResource MaterialDesignDivider}"
+                        Padding="10">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Port Selection" 
+                               FontSize="16"
+                               VerticalAlignment="Center"
+                               HorizontalAlignment="Center"/>
+                        <StackPanel HorizontalAlignment="Center">
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Scanner port" VerticalAlignment="Center" Margin="5" FontSize="14"/>
+                                <ComboBox Grid.Column="1" HorizontalAlignment="Right" Width="50" Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort1}"/>
+                            </Grid>
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Electronic port" VerticalAlignment="Center" Margin="5" FontSize="14"/>
+                                <ComboBox Grid.Column="1" HorizontalAlignment="Right" Width="50" Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort2}"/>
+                            </Grid>
+                            <Grid Margin="5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Engine port" VerticalAlignment="Center" Margin="5" FontSize="14"/>
+                                <ComboBox Grid.Column="1" HorizontalAlignment="Right" Width="50" Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort3}"/>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!--Right Panel-->
+        <Border Grid.Row="1"
+                Grid.Column="1"
+                BorderBrush="{DynamicResource MaterialDesignDivider}"
+                BorderThickness="0,0,3,3"
+                Margin="0,0,5,5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Column="0" 
+                           Text="Scanner Preview" 
+                           FontSize="24" 
+                           HorizontalAlignment="Center"
+                           Padding="10"/>
+
+                <lvc:CartesianChart Grid.Row="1" 
+                                    Width="800"
+                                    Series="{Binding Series}"
+                                    XAxes="{Binding XAxes}"
+                                    YAxes="{Binding YAxes}">
+                </lvc:CartesianChart>
+            </Grid>
+        </Border>
     </Grid>
 </Window>

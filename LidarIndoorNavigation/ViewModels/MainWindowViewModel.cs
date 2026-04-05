@@ -81,7 +81,6 @@ namespace LidarIndoorNavigation.ViewModels
         public IRelayCommand? BackwardCommand { get; }
         public IRelayCommand? StopRobotCommand { get; }
         public IRelayCommand? OpenWindowsCommand { get; }
-        public IRelayCommand? TestDataMemoryCommand { get; }
         public IRelayCommand? RefreshPortsCommand { get; }
 
         public MainWindowViewModel()
@@ -96,7 +95,6 @@ namespace LidarIndoorNavigation.ViewModels
             RightCommand = new RelayCommand(Right);
             BackwardCommand = new RelayCommand(Backward);
             StopRobotCommand = new RelayCommand(Stop);
-            TestDataMemoryCommand = new RelayCommand(TestDataMemory);
             RefreshPortsCommand = new RelayCommand(RefreshPorts);
             OpenWindowsCommand = new RelayCommand(OpenWindows);
 
