@@ -7,110 +7,102 @@
         xmlns:local="clr-namespace:LidarIndoorNavigation.Views"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
-        Title="DataViewerView" Height="450" Width="800">
-    <Grid Margin="16">
+        Title="Data Viewer" SizeToContent="WidthAndHeight" ResizeMode="NoResize" MinWidth="300">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" 
-                   Text="Robot Telemetry"
-                   Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                   Margin="0,0,0,16"/>
+        <!--Title Bar-->
+        <Border Grid.Row="0"
+                BorderBrush="{DynamicResource MaterialDesignDivider}"
+                BorderThickness="3"
+                Margin="5,5,5,0"
+                Padding="12,10">
+            <TextBlock Text="Robot Telemetry"
+                       FontSize="24"
+                       FontWeight="Bold"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"/>
+        </Border>
 
-        <materialDesign:Card Grid.Row="1" Margin="0,0,0,16">
-            <StackPanel Margin="16">
-                <TextBlock Text="Sector Risks" 
-                           Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                           Margin="0,0,0,8"/>
+        <!--Content-->
+        <Border Grid.Row="1"
+                BorderBrush="{DynamicResource MaterialDesignDivider}"
+                BorderThickness="3,0,3,3"
+                Margin="5,0,5,5">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
 
-                <ItemsControl ItemsSource="{Binding SectorRisks}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Grid Margin="0,4">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
+                <!--Sector Risks-->
+                <Border Grid.Row="0"
+                        BorderBrush="{StaticResource MaterialDesignDivider}"
+                        BorderThickness="0,0,0,2"
+                        Padding="10">
+                    <StackPanel>
+                        <TextBlock Text="Sector Risks"
+                                   FontSize="16"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,8"/>
+                        <ItemsControl ItemsSource="{Binding SectorRisks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="{Binding SectorNumber}" FontSize="14" Width="80" VerticalAlignment="Center"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Risk}" FontSize="14" Width="50" TextAlignment="Right" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
 
-                                <TextBlock Grid.Column="0" 
-                                           Text="{Binding SectorNumber}"
-                                           Width="80"
-                                           VerticalAlignment="Center"/>
+                <!--Frontal Risk and Angle-->
+                <Border Grid.Row="1"
+                        BorderBrush="{StaticResource MaterialDesignDivider}"
+                        BorderThickness="0,0,0,2"
+                        Padding="10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Column="2" 
-                                           Text="{Binding Risk}"
-                                           Width="50"
-                                           TextAlignment="Right"
-                                           VerticalAlignment="Center"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </materialDesign:Card>
+                        <TextBlock Grid.Row="0" Grid.Column="0" Text="Frontal Risk" FontSize="16" VerticalAlignment="Center" Margin="0,0,0,8"/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding FrontalRisk, StringFormat='{}{0:F2}'}" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Margin="16,0,0,8"/>
 
-        <materialDesign:Card Grid.Row="2" Margin="0,0,0,16">
-            <Grid Margin="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="1" Grid.Column="0" Text="Angle" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Angle, StringFormat='{}{0:F2}°'}" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                    </Grid>
+                </Border>
 
-                <StackPanel Grid.Column="0">
-                    <TextBlock Text="Frontal Risk" 
-                               Style="{StaticResource MaterialDesignHeadline6TextBlock}"/>
-                </StackPanel>
-
-                <TextBlock Grid.Column="1" 
-                           Text="{Binding FrontalRisk, StringFormat='{}{0:F2}'}"
-                           Style="{StaticResource MaterialDesignHeadline4TextBlock}"
-                           VerticalAlignment="Center"
-                           Margin="16,0,0,0"/>
+                <!--Command-->
+                <Border Grid.Row="2"
+                        Padding="10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Command" FontSize="16" VerticalAlignment="Center"/>
+                        <TextBlock Grid.Column="1" Text="{Binding Command}" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" Margin="16,0,0,0"/>
+                    </Grid>
+                </Border>
             </Grid>
-        </materialDesign:Card>
-
-        <materialDesign:Card Grid.Row="3" Margin="0,0,0,16">
-            <Grid Margin="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Column="0" 
-                           Text="Angle" 
-                           Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                           VerticalAlignment="Center"/>
-
-                <TextBlock Grid.Column="1" 
-                           Text="{Binding Angle, StringFormat='{}{0:F2}°'}"
-                           Style="{StaticResource MaterialDesignHeadline4TextBlock}"
-                           VerticalAlignment="Center"/>
-            </Grid>
-        </materialDesign:Card>
-
-        <materialDesign:Card Grid.Row="4">
-            <Grid Margin="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <TextBlock Grid.Column="0" 
-                           Text="Command" 
-                           Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                           VerticalAlignment="Center"/>
-
-                <TextBlock Grid.Column="1"
-                           Style="{StaticResource MaterialDesignHeadline4TextBlock}"
-                           Text="{Binding Command}">
-                </TextBlock>
-            </Grid>
-        </materialDesign:Card>
+        </Border>
     </Grid>
 </Window>

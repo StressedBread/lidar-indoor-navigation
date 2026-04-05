@@ -229,7 +229,7 @@
                         <TextBlock Grid.Row="3" Grid.Column="0" FontSize="16" Margin="5" Padding="0,10,0,0" Text="Electronics : "/>
                         <TextBlock Grid.Row="3" Grid.Column="1" FontSize="16" Margin="5" Padding="0,10,0,0" HorizontalAlignment="Left" FontWeight="SemiBold" Text="{Binding ElectronicsRunning, Converter={StaticResource BoolToOnOffConverter}}"/>
 
-                        <TextBlock Grid.Row="4" Grid.Column="0" FontSize="16" Margin="5" Text="Engine port: "/>
+                        <TextBlock Grid.Row="4" Grid.Column="0" FontSize="16" Margin="5" Text="Engine: "/>
                         <TextBlock Grid.Row="4" Grid.Column="1" FontSize="16" Margin="5" HorizontalAlignment="Left" FontWeight="SemiBold" Text="{Binding EngineRunning, Converter={StaticResource BoolToOnOffConverter}}"/>
                     </Grid>
                 </Border>
