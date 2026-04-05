@@ -1,40 +1,23 @@
 ﻿using LidarIndoorNavigation.Models;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace LidarIndoorNavigation.Helpers
 {
     internal class ReactiveNavigation
     {
-        const int sectors = 20;
         const double span = 240;
-        const double sectorWidth = span / sectors;
-        //const double frontRiskThreshold = 1;
-        const double softThreshold = 0.6;
         const double deadZone = 20;
         const int hold = 1;
 
-        double lastMoveAngle = 0;
-        int turnCommit = 0;
-        double committedAngle = 0;
-
+        private double[]? risks;
+        private int lastSectorCount = -1;
         double leftRightCounter = 0;
         bool isTurning = false;
-        int turnFrames = 0;
         int turnMiliSeconds = 300;
-        double turnDirection = 0;
 
         private Stopwatch turnStopwatch = new();
 
-        ICP icp = new();
-
         RiskCalculation riskCalculation = new();
-        private double[] risks = new double[sectors];
         public double moveAngle = 0;
         private double forwardScale = 1;
         private bool isBlocked = false;
@@ -43,33 +26,23 @@ namespace LidarIndoorNavigation.Helpers
         private int holdCounter = 0;
 
 
-        public (double moveAngle, double[] risks, double frontRisk) DecideMovement(List<(double x, double y)> cleanScan, int distanceCells, int frontRiskThreshold)
+        public (double moveAngle, double[] risks, double frontRisk) DecideMovement(List<(double x, double y)> cleanScan, int distanceCells, int frontRiskThreshold, int sectors)
         {
-            /*icp.Update(cleanScan);
-
-            if (WaypointNavigator.goalReached)
+            double sectorWidth = span / sectors;
+            if (risks == null || lastSectorCount != sectors)
             {
-                icp.Reset();
-            }*/
+                risks = new double[sectors];
+                lastSectorCount = sectors;
+            }
 
-            risks = riskCalculation.EvaluateSectors(distanceCells);
-            
-            System.Diagnostics.Debug.WriteLine("Front Risk Threshold: " + frontRiskThreshold);
+            risks = riskCalculation.EvaluateSectors(distanceCells, sectors);
 
             if (isTurning && leftRightCounter >= 3)
             {
-                
-                /*moveAngle = turnDirection;
-                turnFrames--;
-                System.Diagnostics.Debug.WriteLine("Turn Frames: " + turnFrames);
-
-                if (turnFrames <= 0)
-                    isTurning = false;*/
-
                 if (turnStopwatch.ElapsedMilliseconds >= turnMiliSeconds)
                 {
                     isTurning = false;
-                    leftRightCounter = 0;                    
+                    leftRightCounter = 0;
                 }
 
                 return (moveAngle, risks, frontRisk: 0);
@@ -87,12 +60,10 @@ namespace LidarIndoorNavigation.Helpers
 
             double magnitude = Math.Sqrt(totalX * totalX + totalY * totalY);
             moveAngle = Math.Atan2(totalX, totalY) * 180 / Math.PI;
-            System.Diagnostics.Debug.WriteLine("Angle: " + moveAngle);
             isBlocked = magnitude < 1;
 
             int mid = (sectors / 2) - 1;
             double frontRisk = (risks[mid + 1] + risks[mid]) / 2;
-            System.Diagnostics.Debug.WriteLine("Front risk: " + frontRisk);
             forwardScale = Math.Max(0, 1 - frontRisk / 1.5);
 
             if (leftRightCounter >= 3)
@@ -103,55 +74,15 @@ namespace LidarIndoorNavigation.Helpers
                 isTurning = true;
                 turnStopwatch.Restart();
             }
-            else if(!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
+            else if (!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
             {
                 double leftRisk = risks.Skip(mid + 1).Sum();
                 double rightRisk = risks.Take(mid).Sum();
                 moveAngle = leftRisk < rightRisk ? 30 : -30;
                 leftRightCounter += 0.5;
             }
-
-            /*if (turnCommit > 0)
-            {
-                moveAngle = committedAngle;
-                turnCommit--;
-            }
-            else if (!isBlocked && frontRisk > frontRiskThreshold)
-            {
-                double leftRisk = risks.Skip(mid + 1).Sum();
-                double rightRisk = risks.Take(mid).Sum();
-                committedAngle = leftRisk < rightRisk ? 30 : -30;
-                turnCommit = 5;
-                moveAngle = committedAngle;
-            }*/
-
-            /*if (frontRisk > softThreshold && !isTurning)
-            {
-                double leftRisk = risks.Skip(mid + 1).Sum();
-                double rightRisk = risks.Take(mid).Sum();
-
-                turnDirection = leftRisk < rightRisk ? 30 : -30;
-
-                isTurning = true;
-                turnFrames = 18; // VERY important tuning parameter
-
-                moveAngle = turnDirection;
-            }*/
-
-            /*moveAngle = 0.7 * lastMoveAngle + 0.3 * moveAngle;
-            lastMoveAngle = moveAngle;*/
-
-            /*double? goalAngle = WaypointNavigator.GetSteeringAgle(icp.positionX, icp.positionY, icp.heading, forwardScale);
-
-            if (goalAngle.HasValue)
-            {
-                double goalWeight = forwardScale;
-                double avoidanceWeight = 1 - forwardScale;
-                moveAngle = goalAngle.Value * goalWeight + moveAngle * avoidanceWeight;
-            }
-            
-            if (goalAngle != null) return goalAngle.Value;*/
-            return (moveAngle, risks, frontRisk);
+           
+           return (moveAngle, risks, frontRisk);
         }
 
         public (MovementCommands command, double forwardScale) GetCommand(double finalMoveAngle)

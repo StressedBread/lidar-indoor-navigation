@@ -9,6 +9,7 @@
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
         Title="MainWindow" Height="450" Width="Auto">
+    
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

@@ -7,9 +7,7 @@ using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using SCIP_Library;
-using SkiaSharp;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.IO.Ports;
 using System.Windows;
 using System.Windows.Media.Imaging;
@@ -65,6 +63,8 @@ namespace LidarIndoorNavigation.ViewModels
         private int distanceSliderValue = 15;
         [ObservableProperty]
         private int frontRiskSliderValue = 1;
+        [ObservableProperty]
+        private int sectorCountSliderValue = 20;
 
         public ISeries[] Series { get; set; }
         public Axis[] XAxes { get; set; }
@@ -101,7 +101,6 @@ namespace LidarIndoorNavigation.ViewModels
             OpenWindowsCommand = new RelayCommand(OpenWindows);
 
             LoadSerialPorts();
-            WaypointNavigator.SetGoal(-1000, 1500);
 
             Series =
             [
@@ -215,35 +214,20 @@ namespace LidarIndoorNavigation.ViewModels
                             MessageBox.Show($"Error updating chart: {ex.Message}");
                         }
 
-                        /*(int R, int Mid, int L) minDistances = reactiveNavigation.CalculateMinDistanceLessSectors();
-                        System.Diagnostics.Debug.WriteLine(minDistances);
-                        var decision = reactiveNavigation.DecisionLogicLessSectors(minDistances);*/
-
-                        //RobotController.Movement(decision);
-
                         robotMemory.EnqueueScan(DistancePointsStaticList.CartesianDistances.ToList());
 
                         App.Current.Dispatcher.Invoke(() =>
                         {
-                            GridImage = robotMemory.RenderGrid(DistanceSliderValue);
+                            GridImage = robotMemory.RenderGrid(DistanceSliderValue, SectorCountSliderValue);
                         });
 
-                        (double moveAngle, double[] risks, double frontRisk) = reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances, DistanceSliderValue, FrontRiskSliderValue);
+                        (double moveAngle, double[] risks, double frontRisk) = reactiveNavigation.DecideMovement(DistancePointsStaticList.CartesianDistances, DistanceSliderValue, FrontRiskSliderValue, SectorCountSliderValue);
 
                         var (command, forwardScale) = reactiveNavigation.GetCommand(moveAngle);
 
                         RobotController.Movement(command);
 
                         UpdateData(risks, frontRisk, moveAngle, command.ToString());
-                        //var (leftSpeed, rightSpeed) = RobotController.AngleToWheelSpeeds(reactiveNavigation.moveAngle, forwardScale, command == MovementCommands.Stop);
-
-                        System.Diagnostics.Debug.WriteLine("\n********");
-                        System.Diagnostics.Debug.WriteLine(moveAngle);
-                        System.Diagnostics.Debug.WriteLine(command);
-                        System.Diagnostics.Debug.WriteLine("********\n");
-                        //System.Diagnostics.Debug.WriteLine(leftSpeed + " || " + rightSpeed);
-
-                        //RobotController.SetMovement(leftSpeed, rightSpeed);
                     }
                     RobotController.Movement(MovementCommands.Stop);
                     urg.Close();
@@ -327,11 +311,6 @@ namespace LidarIndoorNavigation.ViewModels
         private void Stop()
         {
             RobotController.Movement(MovementCommands.Stop);
-        }
-
-        private void TestDataMemory()
-        {
-            //robotMemory.UpdateMemory();
         }
 
         private void RefreshPorts()
