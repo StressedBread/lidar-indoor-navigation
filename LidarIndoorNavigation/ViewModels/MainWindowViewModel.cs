@@ -45,6 +45,17 @@ namespace LidarIndoorNavigation.ViewModels
         private string? selectedPort3 = "";
 
         [ObservableProperty]
+        private bool electronicsRunning;
+        [ObservableProperty]
+        private bool engineRunning;
+        [ObservableProperty]
+        private bool scannerOpen;
+        [ObservableProperty]
+        private bool electronicsOpen;
+        [ObservableProperty]
+        private bool engineOpen;
+
+        [ObservableProperty]
         private BitmapSource? gridImage;
 
         [ObservableProperty]
@@ -73,7 +84,7 @@ namespace LidarIndoorNavigation.ViewModels
         public IAsyncRelayCommand? StartCommand { get; }
         public IRelayCommand? StopCommand { get; }
         public IRelayCommand? OpenPortsCommand { get; }
-        public IRelayCommand? ElectronicCommand { get; }
+        public IAsyncRelayCommand? ElectronicCommand { get; }
         public IRelayCommand? EngineCommand { get; }
         public IRelayCommand? ForwardCommand { get; }
         public IRelayCommand? LeftCommand { get; }
@@ -88,7 +99,7 @@ namespace LidarIndoorNavigation.ViewModels
             StartCommand = new AsyncRelayCommand(StartScan);
             StopCommand = new RelayCommand(StopScan);
             OpenPortsCommand = new RelayCommand(OpenPorts);
-            ElectronicCommand = new RelayCommand(Electronic);
+            ElectronicCommand = new AsyncRelayCommand(Electronic);
             EngineCommand = new RelayCommand(Engine);
             ForwardCommand = new RelayCommand(Forward);
             LeftCommand = new RelayCommand(Left);
@@ -114,7 +125,9 @@ namespace LidarIndoorNavigation.ViewModels
                 new Axis
                 {
                     MinLimit = -3000,
-                    MaxLimit = 3000
+                    MaxLimit = 3000,
+                    MinStep = 500,
+                    ForceStepToMin = true
                 }
             ];
 
@@ -123,7 +136,9 @@ namespace LidarIndoorNavigation.ViewModels
                 new Axis
                 {
                     MinLimit = -3000,
-                    MaxLimit = 3000
+                    MaxLimit = 3000,
+                    MinStep = 500,
+                    ForceStepToMin = true
                 }
             ];
         }
@@ -157,7 +172,7 @@ namespace LidarIndoorNavigation.ViewModels
                     try
                     {
                         urg.Open();
-
+                        ScannerOpen = urg.IsOpen;
                         // Initialize SCIP2
                         urg.Write(SCIP_Writer.SCIP2());
                         urg.ReadLine(); // ignore echo back
@@ -170,6 +185,7 @@ namespace LidarIndoorNavigation.ViewModels
                     {
                         MessageBox.Show($"Error opening serial port: {ex.Message}");
                         urg.Close();
+                        ScannerOpen = urg.IsOpen;
                         return;
                     }
 
@@ -229,6 +245,7 @@ namespace LidarIndoorNavigation.ViewModels
                     }
                     RobotController.Movement(MovementCommands.Stop);
                     urg.Close();
+                    ScannerOpen = urg.IsOpen;
                 }, token);
 
             }
@@ -263,26 +280,30 @@ namespace LidarIndoorNavigation.ViewModels
             {
                 if (!arePortsOpen)
                 {
-                    RobotController.OpenSerialPort1(SelectedPort2);
-                    RobotController.OpenSerialPort2(SelectedPort3);
+                    ElectronicsOpen = RobotController.OpenSerialPort1(SelectedPort2);
+                    EngineOpen = RobotController.OpenSerialPort2(SelectedPort3);
                     arePortsOpen = true;
                 }
                 else
                 {
-                    RobotController.ClosePorts();
+                    var portsOpenBool = RobotController.ClosePorts();
+                    ElectronicsOpen = portsOpenBool.port1;
+                    EngineOpen = portsOpenBool.port2;
                     arePortsOpen = false;
                 }
             }
         }
 
-        private void Electronic()
+        private async Task Electronic()
         {
-            RobotController.ElectronicButton();
+            ElectronicsRunning = RobotController.ElectronicButton();
+            await Task.Delay(1000);
+            RefreshPorts();
         }
 
         private void Engine()
         {
-            RobotController.EngineButton();
+            EngineRunning = RobotController.EngineButton();
         }
 
 
@@ -313,6 +334,10 @@ namespace LidarIndoorNavigation.ViewModels
 
         private void RefreshPorts()
         {
+            var port1 = SelectedPort1;
+            var port2 = SelectedPort2;
+            var port3 = SelectedPort3;
+
             ports.Clear();
             ComPorts.Clear();
             ports = SerialPort.GetPortNames().ToList();
@@ -320,6 +345,10 @@ namespace LidarIndoorNavigation.ViewModels
             {
                 ComPorts.Add(port);
             }
+
+            SelectedPort1 = port1;
+            SelectedPort2 = port2;
+            SelectedPort3 = port3;
         }
 
         private void OpenGridImageViewer()

@@ -19,7 +19,7 @@ namespace LidarIndoorNavigation.Helpers
         //Nastavenie seriovej linky pre Napájanie//
         //***************************************//
 
-        public static void OpenSerialPort1(string portName)
+        public static bool OpenSerialPort1(string portName)
         {
             if (portName != null || portName != string.Empty)
             {
@@ -31,20 +31,23 @@ namespace LidarIndoorNavigation.Helpers
                 try
                 {
                     selectedSerialPort1.Open();
-                    MessageBox.Show("Port 1 open");
+                    return selectedSerialPort1.IsOpen;
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error opening serial port 1: " + ex.Message);
+                    return selectedSerialPort1.IsOpen;
                 }
             }
+
+            return false;
         }
 
         //************************************//
         //Nastavenie seriovej linky pre Motory//
         //************************************//
 
-        public static void OpenSerialPort2(string portName)
+        public static bool OpenSerialPort2(string portName)
         {
             if (portName != null || portName != string.Empty)
             {
@@ -56,20 +59,23 @@ namespace LidarIndoorNavigation.Helpers
                 try
                 {
                     selectedSerialPort2.Open();
-                    MessageBox.Show("Port 2 open");
+                    return selectedSerialPort2.IsOpen;
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("Error opening serial port 2: " + ex.Message);
+                    return selectedSerialPort2.IsOpen;
                 }
             }
+
+            return false;
         }
 
         //**********************************************//    //*************//
         //Tlačídlo MOSFET pre zapnutie MOSFET1 a MOSFET2//    //Serial Port 2//
         //**********************************************//    //*************//
 
-        public static void ElectronicButton()
+        public static bool ElectronicButton()
         {
             if (selectedSerialPort1 != null && selectedSerialPort2 != null && selectedSerialPort1.IsOpen && selectedSerialPort2.IsOpen)
             {
@@ -78,24 +84,25 @@ namespace LidarIndoorNavigation.Helpers
                     selectedSerialPort1.Write("|F11\r");  //MOSFET1 ON
                     selectedSerialPort1.Write("|F21\r");  //MOSFET2 ON
                     Electronic = true;
+                    return Electronic;
                 }
                 else
                 {
                     selectedSerialPort1.Write("|F10\r");  //MOSFET1 OFF
                     selectedSerialPort1.Write("|F20\r");  //MOSFET2 OFF
                     Electronic = false;
+                    return Electronic;
                 }
             }
-            else
-            {
-            }
+
+            return Electronic;
         }
 
         //**************************************//    //*************//
         //Tlačídlo Motory pre zapnutie  motorov//    //Serial Port 2//
         //************************************//    //*************//
 
-        public static void EngineButton()
+        public static bool EngineButton()
         {
             if (selectedSerialPort1 != null && selectedSerialPort2 != null && selectedSerialPort1.IsOpen && selectedSerialPort2.IsOpen)
             {
@@ -105,14 +112,18 @@ namespace LidarIndoorNavigation.Helpers
 
                     selectedSerialPort1.Write("|MM0\r");  //MOTOR OFF
                     Engine = false;
+                    return Engine;
                 }
 
                 else if (Electronic == true && Engine == false)
                 {
                     selectedSerialPort1.Write("|MM1\r");  //MOTOR ON
                     Engine = true;
+                    return Engine;
                 }
             }
+
+            return Engine;
         }
 
 
@@ -187,15 +198,17 @@ namespace LidarIndoorNavigation.Helpers
         //Close the ports// 
         //***************//
 
-        internal static void ClosePorts()
+        internal static (bool port1, bool port2) ClosePorts()
         {
             if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen && selectedSerialPort2 != null && selectedSerialPort2.IsOpen)
             {
                 selectedSerialPort1.Close();
                 selectedSerialPort2.Close();
 
-                MessageBox.Show("Robot serial ports were closed successfully.");
+                return (selectedSerialPort1.IsOpen, selectedSerialPort2.IsOpen);
             }
+
+            return (false, false);
         }
 
         //************************************//

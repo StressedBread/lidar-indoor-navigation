@@ -4,11 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LidarIndoorNavigation"
+        xmlns:helpers="clr-namespace:LidarIndoorNavigation.Helpers"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
         mc:Ignorable="d"
         Style="{StaticResource MaterialDesignWindow}"
         Title="MainWindow" SizeToContent="WidthAndHeight" ResizeMode="NoResize">
+    <Window.Resources>
+        <helpers:BoolToOnOffConverter x:Key="BoolToOnOffConverter"/>
+        <helpers:BoolToOpenClosedConverter x:Key="BoolToOpenClosedConverter"/>
+    </Window.Resources>
     <Grid>
         <!--Main grid definitions-->
         <Grid.RowDefinitions>
@@ -28,7 +33,8 @@
                 Margin="5,5,5,0"
                 Padding="12, 10">
             <DockPanel>
-                <TextBlock Text="Robot Navigation Controller" 
+                <TextBlock Text="Robot Navigation Controller"
+                           Margin="0,0,0,10"
                            FontSize="24"
                            FontWeight="Bold"
                            DockPanel.Dock="Top"
@@ -128,15 +134,15 @@
                                VerticalAlignment="Center"
                                HorizontalAlignment="Center"/>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <RepeatButton Content="Forward" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Command="{Binding ForwardCommand}"/>
+                            <RepeatButton Content="Forward" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Height="28" Width="85" FontSize="12" Command="{Binding ForwardCommand}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <RepeatButton Content="Left" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Command="{Binding LeftCommand}"/>
-                            <RepeatButton Content="Stop" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Command="{Binding StopRobotCommand}"/>
-                            <RepeatButton Content="Right" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Command="{Binding RightCommand}"/>
+                            <RepeatButton Content="Left" Style="{StaticResource MaterialDesignOutlinedButton}" Height="28" Width="70" FontSize="12" Margin="5" Command="{Binding LeftCommand}"/>
+                            <RepeatButton Content="Stop" Style="{StaticResource MaterialDesignOutlinedButton}" Height="28" Width="85" FontSize="12" Margin="5" Command="{Binding StopRobotCommand}"/>
+                            <RepeatButton Content="Right" Style="{StaticResource MaterialDesignOutlinedButton}" Height="28" Width="70" FontSize="12" Margin="5" Command="{Binding RightCommand}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <RepeatButton Content="Backward" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="5" Command="{Binding BackwardCommand}"/>
+                            <RepeatButton Content="Backward" Style="{StaticResource MaterialDesignOutlinedButton}" Height="28" Width="85" FontSize="12" Margin="5" Command="{Binding BackwardCommand}"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -150,32 +156,28 @@
                                FontSize="16"
                                VerticalAlignment="Center"
                                HorizontalAlignment="Center"/>
-                        <StackPanel HorizontalAlignment="Center">
-                            <Grid Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Scanner port" VerticalAlignment="Center" Margin="5" FontSize="14"/>
-                                <ComboBox Grid.Column="1" HorizontalAlignment="Right" Width="50" Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort1}"/>
-                            </Grid>
-                            <Grid Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Electronic port" VerticalAlignment="Center" Margin="5" FontSize="14"/>
-                                <ComboBox Grid.Column="1" HorizontalAlignment="Right" Width="50" Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort2}"/>
-                            </Grid>
-                            <Grid Margin="5">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" HorizontalAlignment="Left" Style="{StaticResource MaterialDesignBody1TextBlock}" Text="Engine port" VerticalAlignment="Center" Margin="5" FontSize="14"/>
-                                <ComboBox Grid.Column="1" HorizontalAlignment="Right" Width="50" Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort3}"/>
-                            </Grid>
-                        </StackPanel>
+
+                        <Grid Margin="5" HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="15"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="Scanner port" VerticalAlignment="Center" Margin="5" FontSize="14" Style="{StaticResource MaterialDesignBody1TextBlock}"/>
+                            <ComboBox  Grid.Row="0" Grid.Column="2" Width="70" Margin="5" Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort1}"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="Electronics port" VerticalAlignment="Center" Margin="5" FontSize="14" Style="{StaticResource MaterialDesignBody1TextBlock}"/>
+                            <ComboBox  Grid.Row="1" Grid.Column="2" Width="70" Margin="5" Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort2}"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Engine port" VerticalAlignment="Center" Margin="5" FontSize="14" Style="{StaticResource MaterialDesignBody1TextBlock}"/>
+                            <ComboBox  Grid.Row="2" Grid.Column="2" Width="70" Margin="5" Style="{StaticResource MaterialDesignComboBox}" ItemsSource="{Binding ComPorts}" SelectedItem="{Binding SelectedPort3}"/>
+                        </Grid>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -190,16 +192,54 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <TextBlock Grid.Column="0" 
+
+                <Border Grid.Row="0"
+                        BorderBrush="{StaticResource MaterialDesignDivider}"
+                        BorderThickness="0,0,0,2"
+                        Padding="10">
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=".22*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!--Ports-->
+                        <TextBlock Grid.Row="0" Grid.Column="0" FontSize="16" Margin="5" Text="Scanner port: "/>
+                        <TextBlock Grid.Row="0" Grid.Column="1" FontSize="16" Margin="5" HorizontalAlignment="Left" FontWeight="SemiBold" Text="{Binding ScannerOpen, Converter={StaticResource BoolToOpenClosedConverter}}"/>
+
+                        <TextBlock Grid.Row="1" Grid.Column="0" FontSize="16" Margin="5" Text="Electronics port: "/>
+                        <TextBlock Grid.Row="1" Grid.Column="1" FontSize="16" Margin="5" HorizontalAlignment="Left" FontWeight="SemiBold" Text="{Binding ElectronicsOpen, Converter={StaticResource BoolToOpenClosedConverter}}"/>
+
+                        <TextBlock Grid.Row="2" Grid.Column="0" FontSize="16" Margin="5" Text="Engine port: "/>
+                        <TextBlock Grid.Row="2" Grid.Column="1" FontSize="16" Margin="5" HorizontalAlignment="Left" FontWeight="SemiBold" Text="{Binding EngineOpen, Converter={StaticResource BoolToOpenClosedConverter}}"/>
+
+                        <!--Robot-->
+                        <TextBlock Grid.Row="3" Grid.Column="0" FontSize="16" Margin="5" Padding="0,10,0,0" Text="Electronics : "/>
+                        <TextBlock Grid.Row="3" Grid.Column="1" FontSize="16" Margin="5" Padding="0,10,0,0" HorizontalAlignment="Left" FontWeight="SemiBold" Text="{Binding ElectronicsRunning, Converter={StaticResource BoolToOnOffConverter}}"/>
+
+                        <TextBlock Grid.Row="4" Grid.Column="0" FontSize="16" Margin="5" Text="Engine port: "/>
+                        <TextBlock Grid.Row="4" Grid.Column="1" FontSize="16" Margin="5" HorizontalAlignment="Left" FontWeight="SemiBold" Text="{Binding EngineRunning, Converter={StaticResource BoolToOnOffConverter}}"/>
+                    </Grid>
+                </Border>
+                <TextBlock Grid.Row="1" 
                            Text="Scanner Preview" 
-                           FontSize="24" 
+                           FontSize="20" 
                            HorizontalAlignment="Center"
                            Padding="10"/>
 
-                <lvc:CartesianChart Grid.Row="1" 
+                <lvc:CartesianChart Grid.Row="2" 
                                     Width="800"
                                     Series="{Binding Series}"
                                     XAxes="{Binding XAxes}"
