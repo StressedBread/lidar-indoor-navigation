@@ -17,13 +17,11 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Header -->
         <TextBlock Grid.Row="0" 
                    Text="Robot Telemetry"
                    Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                    Margin="0,0,0,16"/>
 
-        <!-- Sector Risks -->
         <materialDesign:Card Grid.Row="1" Margin="0,0,0,16">
             <StackPanel Margin="16">
                 <TextBlock Text="Sector Risks" 
@@ -57,7 +55,6 @@
             </StackPanel>
         </materialDesign:Card>
 
-        <!-- Frontal Risk -->
         <materialDesign:Card Grid.Row="2" Margin="0,0,0,16">
             <Grid Margin="16">
                 <Grid.ColumnDefinitions>
@@ -71,14 +68,13 @@
                 </StackPanel>
 
                 <TextBlock Grid.Column="1" 
-                           Text="{Binding FrontalRisk}"
+                           Text="{Binding FrontalRisk, StringFormat='{}{0:F2}'}"
                            Style="{StaticResource MaterialDesignHeadline4TextBlock}"
                            VerticalAlignment="Center"
                            Margin="16,0,0,0"/>
             </Grid>
         </materialDesign:Card>
 
-        <!-- Angle -->
         <materialDesign:Card Grid.Row="3" Margin="0,0,0,16">
             <Grid Margin="16">
                 <Grid.ColumnDefinitions>
@@ -98,7 +94,6 @@
             </Grid>
         </materialDesign:Card>
 
-        <!-- Command -->
         <materialDesign:Card Grid.Row="4">
             <Grid Margin="16">
                 <Grid.ColumnDefinitions>
@@ -111,14 +106,10 @@
                            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                            VerticalAlignment="Center"/>
 
-                <materialDesign:Chip Grid.Column="1"
-                                     Content="{Binding Command}"
-                                     IconBackground="{DynamicResource PrimaryHueMidBrush}"
-                                     IconForeground="{DynamicResource PrimaryHueMidForegroundBrush}">
-                    <materialDesign:Chip.Icon>
-                        <materialDesign:PackIcon Kind="RobotIndustrial"/>
-                    </materialDesign:Chip.Icon>
-                </materialDesign:Chip>
+                <TextBlock Grid.Column="1"
+                           Style="{StaticResource MaterialDesignHeadline4TextBlock}"
+                           Text="{Binding Command}">
+                </TextBlock>
             </Grid>
         </materialDesign:Card>
     </Grid>
