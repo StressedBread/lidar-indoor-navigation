@@ -21,7 +21,7 @@ namespace LidarIndoorNavigation.Helpers
 
         public static bool OpenSerialPort1(string portName)
         {
-            if (string.IsNullOrEmpty(portName))
+            if (!string.IsNullOrEmpty(portName))
             {
                 selectedSerialPort1 = new SerialPort(portName);
                 selectedSerialPort1.BaudRate = 19200;
@@ -49,7 +49,7 @@ namespace LidarIndoorNavigation.Helpers
 
         public static bool OpenSerialPort2(string portName)
         {
-            if (string.IsNullOrEmpty(portName))
+            if (!string.IsNullOrEmpty(portName))
             {
                 selectedSerialPort2 = new SerialPort(portName);
                 selectedSerialPort2.BaudRate = 115200;

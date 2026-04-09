@@ -17,7 +17,7 @@
                 }
 
                 double angle = (start_step + i - 384) * stepAngle;
-                double x = distances[i] * Math.Sin(angle * Math.PI / 180);
+                double x = distances[i] * -Math.Sin(angle * Math.PI / 180);
                 double y = distances[i] * Math.Cos(angle * Math.PI / 180);
                 cartesianPoints.Add((x, y));
             }

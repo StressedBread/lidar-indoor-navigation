@@ -13,7 +13,7 @@ namespace LidarIndoorNavigation.Helpers
         private int lastSectorCount = -1;
         double leftRightCounter = 0;
         bool isTurning = false;
-        int turnMiliSeconds = 300;
+        int turnMiliSeconds = 1100;
 
         private Stopwatch turnStopwatch = new();
 
@@ -26,7 +26,7 @@ namespace LidarIndoorNavigation.Helpers
         private int holdCounter = 0;
 
 
-        public (double moveAngle, double[] risks, double frontRisk) DecideMovement(int distanceCells, int frontRiskThreshold, int sectors)
+        public (double moveAngle, double[] risks, double frontRisk, double currMagnitude) DecideMovement(int distanceCells, int frontRiskThreshold, int sectors)
         {
             double sectorWidth = span / sectors;
             if (risks == null || lastSectorCount != sectors)
@@ -45,7 +45,7 @@ namespace LidarIndoorNavigation.Helpers
                     leftRightCounter = 0;
                 }
 
-                return (moveAngle, risks, frontRisk: 0);
+                return (moveAngle, risks, frontRisk: 0, currMagnitude: 0);
             }
 
             double totalX = 0, totalY = 0;
@@ -74,7 +74,7 @@ namespace LidarIndoorNavigation.Helpers
                 isTurning = true;
                 turnStopwatch.Restart();
             }
-            else if (!isBlocked && frontRisk > frontRiskThreshold && Math.Abs(moveAngle) < deadZone)
+            else if (!isBlocked && frontRisk > frontRiskThreshold)
             {
                 double leftRisk = risks.Skip(mid + 1).Sum();
                 double rightRisk = risks.Take(mid).Sum();
@@ -82,7 +82,7 @@ namespace LidarIndoorNavigation.Helpers
                 leftRightCounter += 0.5;
             }
            
-           return (moveAngle, risks, frontRisk);
+           return (moveAngle, risks, frontRisk, magnitude);
         }
 
         public (MovementCommands command, double forwardScale) GetCommand(double finalMoveAngle)

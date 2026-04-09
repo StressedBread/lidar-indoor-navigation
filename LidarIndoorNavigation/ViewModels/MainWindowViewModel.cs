@@ -68,6 +68,9 @@ namespace LidarIndoorNavigation.ViewModels
         private double angle;
 
         [ObservableProperty]
+        private double magnitude;
+
+        [ObservableProperty]
         private string command = string.Empty;
 
         [ObservableProperty]
@@ -235,13 +238,13 @@ namespace LidarIndoorNavigation.ViewModels
                             GridImage = robotMemory.RenderGrid(DistanceSliderValue, SectorCountSliderValue);
                         });
 
-                        (double moveAngle, double[] risks, double frontRisk) = reactiveNavigation.DecideMovement(DistanceSliderValue, FrontRiskSliderValue, SectorCountSliderValue);
+                        (double moveAngle, double[] risks, double frontRisk, double currMagnitude) = reactiveNavigation.DecideMovement(DistanceSliderValue, FrontRiskSliderValue, SectorCountSliderValue);
 
                         var (command, forwardScale) = reactiveNavigation.GetCommand(moveAngle);
 
                         RobotController.Movement(command);
 
-                        UpdateData(risks, frontRisk, moveAngle, command.ToString());
+                        UpdateData(risks, frontRisk, moveAngle, currMagnitude, command.ToString());
                     }
                     RobotController.Movement(MovementCommands.Stop);
                     urg.Close();
@@ -376,7 +379,7 @@ namespace LidarIndoorNavigation.ViewModels
             });
         }
 
-        public void UpdateData(double[] sectorRisks, double frontalRisk, double angle, string command)
+        public void UpdateData(double[] sectorRisks, double frontalRisk, double angle, double magnitude, string command)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
@@ -388,6 +391,7 @@ namespace LidarIndoorNavigation.ViewModels
 
                 FrontalRisk = frontalRisk;
                 Angle = angle;
+                Magnitude = magnitude;
                 Command = command;
             });
         }
