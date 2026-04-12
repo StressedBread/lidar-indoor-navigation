@@ -207,20 +207,15 @@ namespace LidarIndoorNavigation.ViewModels
                         long time_stamp = 0;
                         SCIP_Reader.MD(receive_data, ref time_stamp, ref distances);
 
-                        DistancePointsStaticList.Clear();
-                        DistancePointsStaticList.Distances.AddRange(distances);
-
-                        cartesianDistances = cartesianConverter.ConvertToCartesian(DistancePointsStaticList.Distances);
-
-                        DistancePointsStaticList.CartesianClear();
-                        DistancePointsStaticList.CartesianDistances.AddRange(cartesianDistances);
+                        cartesianDistances.Clear();
+                        cartesianDistances.AddRange(cartesianConverter.ConvertToCartesian(distances));
 
                         try
                         {
                             App.Current.Dispatcher.Invoke(() =>
                             {
                                 chartPoints.Clear();
-                                foreach (var (x, y) in DistancePointsStaticList.CartesianDistances)
+                                foreach (var (x, y) in cartesianDistances)
                                 {
                                     chartPoints.Add(new ObservablePoint(x, y));
                                 }
@@ -231,7 +226,7 @@ namespace LidarIndoorNavigation.ViewModels
                             MessageBox.Show($"Error updating chart: {ex.Message}");
                         }
 
-                        robotMemory.EnqueueScan(DistancePointsStaticList.CartesianDistances.ToList());
+                        robotMemory.EnqueueScan(cartesianDistances.ToList());
 
                         App.Current.Dispatcher.Invoke(() =>
                         {
