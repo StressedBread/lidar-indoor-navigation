@@ -4,7 +4,7 @@ using System.Windows;
 
 namespace LidarIndoorNavigation.Helpers
 {
-    public static class RobotController
+    public class RobotController
     {
         //Odber = 1.2A, pri zmene smeru 1.8A
 
@@ -19,7 +19,7 @@ namespace LidarIndoorNavigation.Helpers
         //Nastavenie seriovej linky pre Napájanie//
         //***************************************//
 
-        public static bool OpenSerialPort1(string portName)
+        public (bool result, string? message) OpenSerialPort1(string portName)
         {
             if (!string.IsNullOrEmpty(portName))
             {
@@ -31,23 +31,22 @@ namespace LidarIndoorNavigation.Helpers
                 try
                 {
                     selectedSerialPort1.Open();
-                    return selectedSerialPort1.IsOpen;
+                    return (selectedSerialPort1.IsOpen, null);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error opening serial port 1: " + ex.Message);
-                    return selectedSerialPort1.IsOpen;
+                    return (false, ex.Message);
                 }
             }
 
-            return false;
+            return (false, "Port name is null or empty");
         }
 
         //************************************//
         //Nastavenie seriovej linky pre Motory//
         //************************************//
 
-        public static bool OpenSerialPort2(string portName)
+        public (bool result, string? message) OpenSerialPort2(string portName)
         {
             if (!string.IsNullOrEmpty(portName))
             {
@@ -59,23 +58,22 @@ namespace LidarIndoorNavigation.Helpers
                 try
                 {
                     selectedSerialPort2.Open();
-                    return selectedSerialPort2.IsOpen;
+                    return (selectedSerialPort2.IsOpen, null);
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Error opening serial port 2: " + ex.Message);
-                    return selectedSerialPort2.IsOpen;
+                    return (false, ex.Message);
                 }
             }
 
-            return false;
+            return (false, "Port name is null or empty");
         }
 
         //**********************************************//    //*************//
         //Tlačídlo MOSFET pre zapnutie MOSFET1 a MOSFET2//    //Serial Port 2//
         //**********************************************//    //*************//
 
-        public static bool ElectronicButton()
+        public bool ElectronicButton()
         {
             if (selectedSerialPort1 != null && selectedSerialPort2 != null && selectedSerialPort1.IsOpen && selectedSerialPort2.IsOpen)
             {
@@ -102,7 +100,7 @@ namespace LidarIndoorNavigation.Helpers
         //Tlačídlo Motory pre zapnutie  motorov//    //Serial Port 2//
         //************************************//    //*************//
 
-        public static bool EngineButton()
+        public bool EngineButton()
         {
             if (selectedSerialPort1 != null && selectedSerialPort2 != null && selectedSerialPort1.IsOpen && selectedSerialPort2.IsOpen)
             {
@@ -131,7 +129,7 @@ namespace LidarIndoorNavigation.Helpers
         //Posielanie Stringu do seriovej linky// 
         //************************************//
 
-        internal static void Movement(MovementCommands command)
+        internal void Movement(MovementCommands command)
         {
             System.Diagnostics.Debug.WriteLine(command);
 
@@ -198,7 +196,7 @@ namespace LidarIndoorNavigation.Helpers
         //Close the ports// 
         //***************//
 
-        internal static (bool port1, bool port2) ClosePorts()
+        internal (bool port1, bool port2) ClosePorts()
         {
             if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen && selectedSerialPort2 != null && selectedSerialPort2.IsOpen)
             {
@@ -215,7 +213,7 @@ namespace LidarIndoorNavigation.Helpers
         //Turns off everything on app shutdown// 
         //************************************//
 
-        public static void Shutdown()
+        public void Shutdown()
         {
             if (selectedSerialPort1 != null && selectedSerialPort1.IsOpen)
             {

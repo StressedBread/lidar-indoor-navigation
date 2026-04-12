@@ -16,6 +16,8 @@ namespace LidarIndoorNavigation.ViewModels
 {
     internal partial class MainWindowViewModel : ObservableObject
     {
+        private readonly RobotController robotController;
+
         public static SerialPort? urg;
         int baudrate = 115200;
 
@@ -97,8 +99,10 @@ namespace LidarIndoorNavigation.ViewModels
         public IRelayCommand? OpenWindowsCommand { get; }
         public IRelayCommand? RefreshPortsCommand { get; }
 
-        public MainWindowViewModel()
+        public MainWindowViewModel(RobotController robotController)
         {
+            this.robotController = robotController;
+
             StartCommand = new AsyncRelayCommand(StartScan);
             StopCommand = new RelayCommand(StopScan);
             OpenPortsCommand = new RelayCommand(OpenPorts);
@@ -237,11 +241,11 @@ namespace LidarIndoorNavigation.ViewModels
 
                         var (command, forwardScale) = reactiveNavigation.GetCommand(moveAngle);
 
-                        RobotController.Movement(command);
+                        robotController.Movement(command);
 
                         UpdateData(risks, frontRisk, moveAngle, currMagnitude, command.ToString());
                     }
-                    RobotController.Movement(MovementCommands.Stop);
+                    robotController.Movement(MovementCommands.Stop);
                     urg.Close();
                     ScannerOpen = urg.IsOpen;
                 }, token);
@@ -278,13 +282,20 @@ namespace LidarIndoorNavigation.ViewModels
             {
                 if (!arePortsOpen)
                 {
-                    ElectronicsOpen = RobotController.OpenSerialPort1(SelectedPort2);
-                    EngineOpen = RobotController.OpenSerialPort2(SelectedPort3);
+                    var (ElectronicsSuccess, errorElectronics) = robotController.OpenSerialPort1(SelectedPort2);
+                    var (EngineSuccess, errorEngine) = robotController.OpenSerialPort2(SelectedPort3);
+
+                    ElectronicsOpen = ElectronicsSuccess;
+                    EngineOpen = EngineSuccess;
+
+                    if (errorElectronics != null) MessageBox.Show($"Error opening Electronics port: {errorElectronics}");
+                    if (errorEngine != null) MessageBox.Show($"Error opening Engine port: {errorEngine}");
+
                     arePortsOpen = true;
                 }
                 else
                 {
-                    var portsOpenBool = RobotController.ClosePorts();
+                    var portsOpenBool = robotController.ClosePorts();
                     ElectronicsOpen = portsOpenBool.port1;
                     EngineOpen = portsOpenBool.port2;
                     arePortsOpen = false;
@@ -294,40 +305,40 @@ namespace LidarIndoorNavigation.ViewModels
 
         private async Task Electronic()
         {
-            ElectronicsRunning = RobotController.ElectronicButton();
+            ElectronicsRunning = robotController.ElectronicButton();
             await Task.Delay(1000);
             RefreshPorts();
         }
 
         private void Engine()
         {
-            EngineRunning = RobotController.EngineButton();
+            EngineRunning = robotController.EngineButton();
         }
 
 
         private void Forward()
         {
-            RobotController.Movement(MovementCommands.Forward);
+            robotController.Movement(MovementCommands.Forward);
         }
 
         private void Left()
         {
-            RobotController.Movement(MovementCommands.TurnLeft);
+            robotController.Movement(MovementCommands.TurnLeft);
         }
 
         private void Right()
         {
-            RobotController.Movement(MovementCommands.TurnRight);
+            robotController.Movement(MovementCommands.TurnRight);
         }
 
         private void Backward()
         {
-            RobotController.Movement(MovementCommands.Backward);
+            robotController.Movement(MovementCommands.Backward);
         }
 
         private void Stop()
         {
-            RobotController.Movement(MovementCommands.Stop);
+            robotController.Movement(MovementCommands.Stop);
         }
 
         private void RefreshPorts()
