@@ -17,11 +17,9 @@ namespace LidarIndoorNavigation.Views
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly MainWindowViewModel _viewModel = new MainWindowViewModel();
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = _viewModel;
         }
     }
 }
